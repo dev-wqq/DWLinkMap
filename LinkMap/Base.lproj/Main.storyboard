@@ -1,7 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--Application-->
@@ -656,6 +658,9 @@
                         <rect key="contentRect" x="196" y="240" width="640" height="480"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
                         <value key="minSize" type="size" width="640" height="480"/>
+                        <connections>
+                            <outlet property="delegate" destination="B8D-0N-5wS" id="DC6-1H-3IA"/>
+                        </connections>
                     </window>
                     <connections>
                         <segue destination="NOm-F0-hfk" kind="relationship" relationship="window.shadowedContentViewController" id="hzr-L8-sko"/>
@@ -674,11 +679,8 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ALr-eZ-fys">
-                                <rect key="frame" x="539" y="442" width="92" height="32"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="80" id="3CH-GH-Gbd"/>
-                                </constraints>
-                                <buttonCell key="cell" type="push" title="选择文件" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="rtu-TP-JO9">
+                                <rect key="frame" x="117" y="438" width="509" height="32"/>
+                                <buttonCell key="cell" type="push" title="选择历史版本linkMap" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="rtu-TP-JO9">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" size="13" name=".PingFangSC-Regular"/>
                                 </buttonCell>
@@ -686,52 +688,31 @@
                                     <action selector="chooseFile:" target="NOm-F0-hfk" id="DkB-eI-jnN"/>
                                 </connections>
                             </button>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="X8W-zP-y0k">
-                                <rect key="frame" x="18" y="449" width="501" height="17"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="文件路径" id="FvV-BN-GZN">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="X8W-zP-y0k">
+                                <rect key="frame" x="18" y="449" width="84" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="历史版本路径" id="FvV-BN-GZN">
                                     <font key="font" size="13" name=".PingFangSC-Regular"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="I8M-DG-WSk">
-                                <rect key="frame" x="465" y="403" width="66" height="32"/>
-                                <buttonCell key="cell" type="push" title="开始" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="XP2-Lh-FvY">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" size="13" name=".PingFangSC-Regular"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="analyze:" target="NOm-F0-hfk" id="0xl-Fv-JBG"/>
-                                </connections>
-                            </button>
-                            <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="VoU-Xv-rpc">
-                                <rect key="frame" x="355" y="412" width="16" height="16"/>
+                            <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="VoU-Xv-rpc">
+                                <rect key="frame" x="353" y="283" width="16" height="16"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </progressIndicator>
-                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Pqd-pM-Qse">
-                                <rect key="frame" x="539" y="403" width="92" height="32"/>
-                                <buttonCell key="cell" type="push" title="输出文件" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="uOL-1E-Qs0">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" size="13" name=".PingFangSC-Regular"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="ouputFile:" target="NOm-F0-hfk" id="blz-SP-nlH"/>
-                                </connections>
-                            </button>
                             <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jFt-sR-nuD">
-                                <rect key="frame" x="25" y="20" width="601" height="365"/>
+                                <rect key="frame" x="20" y="20" width="601" height="246"/>
                                 <clipView key="contentView" id="UXc-sD-UwH">
-                                    <rect key="frame" x="1" y="1" width="584" height="363"/>
+                                    <rect key="frame" x="1" y="1" width="584" height="244"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <textView importsGraphics="NO" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="zLH-fS-KrC">
-                                            <rect key="frame" x="0.0" y="0.0" width="584" height="363"/>
+                                        <textView importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="zLH-fS-KrC">
+                                            <rect key="frame" x="0.0" y="0.0" width="584" height="244"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                            <size key="minSize" width="584" height="363"/>
+                                            <size key="minSize" width="584" height="244"/>
                                             <size key="maxSize" width="601" height="10000000"/>
                                             <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                            <size key="minSize" width="584" height="363"/>
-                                            <size key="maxSize" width="601" height="10000000"/>
                                         </textView>
                                     </subviews>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -741,12 +722,13 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="ONL-ND-TtJ">
-                                    <rect key="frame" x="585" y="1" width="15" height="363"/>
+                                    <rect key="frame" x="585" y="1" width="15" height="244"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
-                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xh9-IL-MDL">
-                                <rect key="frame" x="20" y="409" width="310" height="22"/>
+                            <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xh9-IL-MDL">
+                                <rect key="frame" x="20" y="281" width="307" height="22"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="模块关键字" drawsBackground="YES" id="rPO-Si-6g9">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -754,34 +736,142 @@
                                 </textFieldCell>
                             </textField>
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="jz7-uS-xpD">
-                                <rect key="frame" x="383" y="411" width="74" height="18"/>
-                                <buttonCell key="cell" type="check" title="分组解析" bezelStyle="regularSquare" imagePosition="left" inset="2" id="FBA-2K-XY9">
+                                <rect key="frame" x="18" y="347" width="89" height="18"/>
+                                <buttonCell key="cell" type="check" title="分模块解析" bezelStyle="regularSquare" imagePosition="left" inset="2" id="FBA-2K-XY9">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" size="13" name=".PingFangSC-Regular"/>
                                 </buttonCell>
                             </button>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jFa-Uu-fij">
+                                <rect key="frame" x="18" y="412" width="99" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="当前版本路径" id="CRL-tr-G7f">
+                                    <font key="font" size="13" name=".PingFangSC-Regular"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="eMP-5V-xX2">
+                                <rect key="frame" x="118" y="403" width="509" height="32"/>
+                                <buttonCell key="cell" type="push" title="选择当前版本LinkMap" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="J4o-hC-RPP">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" size="13" name=".PingFangSC-Regular"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="chooseFile:" target="NOm-F0-hfk" id="CDY-Fu-3F9"/>
+                                </connections>
+                            </button>
+                            <button translatesAutoresizingMaskIntoConstraints="NO" id="fu1-4S-rjX">
+                                <rect key="frame" x="18" y="320" width="102" height="18"/>
+                                <buttonCell key="cell" type="check" title="对比Size差异" bezelStyle="regularSquare" imagePosition="left" inset="2" id="1T5-ee-6wq">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" size="13" name=".PingFangSC-Regular"/>
+                                </buttonCell>
+                            </button>
+                            <button translatesAutoresizingMaskIntoConstraints="NO" id="0k0-uy-xtv">
+                                <rect key="frame" x="163" y="320" width="102" height="18"/>
+                                <buttonCell key="cell" type="check" title="对比文件差异" bezelStyle="regularSquare" imagePosition="left" inset="2" id="dS5-IG-GwQ">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" size="13" name=".PingFangSC-Regular"/>
+                                </buttonCell>
+                            </button>
+                            <button translatesAutoresizingMaskIntoConstraints="NO" id="dmE-L5-Y55">
+                                <rect key="frame" x="163" y="347" width="157" height="18"/>
+                                <buttonCell key="cell" type="check" title="显示每个模块top5文件" bezelStyle="regularSquare" imagePosition="left" inset="2" id="JF9-jc-Kfp">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" size="13" name=".PingFangSC-Regular"/>
+                                </buttonCell>
+                            </button>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uSH-cG-RZ6">
+                                <rect key="frame" x="382" y="347" width="103" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="显示&gt;=100kB" bezelStyle="regularSquare" imagePosition="left" inset="2" id="f2j-mJ-ODw">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" size="13" name=".PingFangSC-Regular"/>
+                                </buttonCell>
+                            </button>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ekq-27-4RW">
+                                <rect key="frame" x="524" y="345" width="98" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="显示&gt;=50kB" bezelStyle="regularSquare" imagePosition="left" inset="2" id="Pgk-5g-vq2">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" size="13" name=".PingFangSC-Regular"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8xY-WF-Ug6">
+                                <rect key="frame" x="506" y="276" width="120" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="导出execl" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="vdE-eb-EBD">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" size="13" name=".PingFangSC-Regular"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="ouputFile:" target="NOm-F0-hfk" id="4bY-EM-YJX"/>
+                                </connections>
+                            </button>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Roy-47-I6S">
+                                <rect key="frame" x="18" y="379" width="71" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="分析白名单" id="RYi-i1-4Ls">
+                                    <font key="font" size="13" name=".PingFangSC-Regular"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="CVm-uk-ine">
+                                <rect key="frame" x="118" y="370" width="509" height="32"/>
+                                <buttonCell key="cell" type="push" title="只分析模块白名单路径" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Jw6-fM-Vwa">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" size="13" name=".PingFangSC-Regular"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="chooseFile:" target="NOm-F0-hfk" id="TYs-rW-Irw"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" verticalCompressionResistancePriority="751" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="I8M-DG-WSk">
+                                <rect key="frame" x="378" y="274" width="120" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="开始" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="XP2-Lh-FvY">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" size="13" name=".PingFangSC-Regular"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="analyze:" target="NOm-F0-hfk" id="0xl-Fv-JBG"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="ALr-eZ-fys" firstAttribute="top" secondItem="gvW-Eu-zLm" secondAttribute="top" constant="10" id="0jK-6m-s4M"/>
-                            <constraint firstItem="ALr-eZ-fys" firstAttribute="leading" secondItem="X8W-zP-y0k" secondAttribute="trailing" constant="28" id="D05-Os-TQC"/>
-                            <constraint firstItem="X8W-zP-y0k" firstAttribute="top" secondItem="gvW-Eu-zLm" secondAttribute="top" constant="14" id="Ros-xJ-QxL"/>
-                            <constraint firstItem="Pqd-pM-Qse" firstAttribute="centerY" secondItem="I8M-DG-WSk" secondAttribute="centerY" id="Wgc-Qs-kpK"/>
-                            <constraint firstAttribute="trailing" secondItem="ALr-eZ-fys" secondAttribute="trailing" constant="15" id="XyU-Rh-gZX"/>
-                            <constraint firstItem="I8M-DG-WSk" firstAttribute="leading" secondItem="jz7-uS-xpD" secondAttribute="trailing" constant="16" id="Y2Q-Ze-poh"/>
-                            <constraint firstItem="VoU-Xv-rpc" firstAttribute="leading" secondItem="xh9-IL-MDL" secondAttribute="trailing" constant="25" id="Z9b-8U-X2k"/>
-                            <constraint firstItem="jz7-uS-xpD" firstAttribute="centerY" secondItem="I8M-DG-WSk" secondAttribute="centerY" id="aAh-7O-8x6"/>
-                            <constraint firstItem="I8M-DG-WSk" firstAttribute="leading" secondItem="VoU-Xv-rpc" secondAttribute="trailing" constant="100" id="aXi-Mm-jt7"/>
+                            <constraint firstItem="ALr-eZ-fys" firstAttribute="top" secondItem="gvW-Eu-zLm" secondAttribute="top" constant="14" id="0jK-6m-s4M"/>
+                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="dmE-L5-Y55" secondAttribute="trailing" constant="20" symbolic="YES" id="5fB-j1-PMD"/>
+                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="fu1-4S-rjX" secondAttribute="trailing" constant="20" symbolic="YES" id="7cg-se-3Dh"/>
+                            <constraint firstItem="eMP-5V-xX2" firstAttribute="leading" secondItem="ALr-eZ-fys" secondAttribute="leading" constant="1" id="Abb-Vc-fm6"/>
+                            <constraint firstItem="ALr-eZ-fys" firstAttribute="leading" secondItem="X8W-zP-y0k" secondAttribute="trailing" constant="23" id="D05-Os-TQC"/>
+                            <constraint firstItem="CVm-uk-ine" firstAttribute="bottom" secondItem="Roy-47-I6S" secondAttribute="bottom" constant="2" id="Jnv-yR-qmk"/>
+                            <constraint firstItem="CVm-uk-ine" firstAttribute="leading" secondItem="eMP-5V-xX2" secondAttribute="leading" id="NlL-cF-TRD"/>
+                            <constraint firstItem="dmE-L5-Y55" firstAttribute="leading" secondItem="gvW-Eu-zLm" secondAttribute="leading" constant="165" id="SPz-Fm-k2n"/>
+                            <constraint firstItem="fu1-4S-rjX" firstAttribute="top" secondItem="jz7-uS-xpD" secondAttribute="bottom" constant="13" id="UxU-me-rxA"/>
+                            <constraint firstItem="eMP-5V-xX2" firstAttribute="top" secondItem="ALr-eZ-fys" secondAttribute="bottom" constant="14" id="VgL-hG-FXc"/>
+                            <constraint firstItem="X8W-zP-y0k" firstAttribute="top" secondItem="ALr-eZ-fys" secondAttribute="top" id="XrO-Iy-nWp"/>
+                            <constraint firstAttribute="trailing" secondItem="ALr-eZ-fys" secondAttribute="trailing" constant="20" id="XyU-Rh-gZX"/>
+                            <constraint firstItem="jz7-uS-xpD" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="gvW-Eu-zLm" secondAttribute="leading" constant="20" symbolic="YES" id="ZaG-vJ-QQt"/>
+                            <constraint firstItem="jFa-Uu-fij" firstAttribute="leading" secondItem="gvW-Eu-zLm" secondAttribute="leading" constant="20" id="Znt-h2-erP"/>
+                            <constraint firstItem="CVm-uk-ine" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Roy-47-I6S" secondAttribute="trailing" constant="8" symbolic="YES" id="aHs-S3-4ed"/>
                             <constraint firstAttribute="bottom" secondItem="jFt-sR-nuD" secondAttribute="bottom" constant="20" id="abh-bN-edl"/>
-                            <constraint firstItem="xh9-IL-MDL" firstAttribute="leading" secondItem="gvW-Eu-zLm" secondAttribute="leading" constant="20" id="cdr-Uz-D23"/>
-                            <constraint firstItem="Pqd-pM-Qse" firstAttribute="leading" secondItem="I8M-DG-WSk" secondAttribute="trailing" constant="20" id="d2o-Qv-BW9"/>
-                            <constraint firstItem="jFt-sR-nuD" firstAttribute="leading" secondItem="gvW-Eu-zLm" secondAttribute="leading" constant="25" id="eZS-dr-230"/>
-                            <constraint firstItem="I8M-DG-WSk" firstAttribute="top" secondItem="X8W-zP-y0k" secondAttribute="bottom" constant="18" id="iDV-cL-R1A"/>
-                            <constraint firstItem="xh9-IL-MDL" firstAttribute="top" secondItem="gvW-Eu-zLm" secondAttribute="top" constant="49" id="jTJ-0l-YhP"/>
-                            <constraint firstItem="VoU-Xv-rpc" firstAttribute="centerY" secondItem="I8M-DG-WSk" secondAttribute="centerY" id="l3Q-rx-AFo"/>
-                            <constraint firstAttribute="trailing" secondItem="jFt-sR-nuD" secondAttribute="trailing" constant="14" id="owp-os-5Oh"/>
+                            <constraint firstItem="eMP-5V-xX2" firstAttribute="centerY" secondItem="jFa-Uu-fij" secondAttribute="centerY" id="cUJ-So-NVb"/>
+                            <constraint firstItem="jz7-uS-xpD" firstAttribute="leading" secondItem="fu1-4S-rjX" secondAttribute="leading" id="cos-60-Gbn"/>
+                            <constraint firstItem="jFt-sR-nuD" firstAttribute="leading" secondItem="gvW-Eu-zLm" secondAttribute="leading" constant="20" id="eZS-dr-230"/>
+                            <constraint firstItem="eMP-5V-xX2" firstAttribute="trailing" secondItem="ALr-eZ-fys" secondAttribute="trailing" constant="1" id="fNK-lK-ygb"/>
+                            <constraint firstItem="dmE-L5-Y55" firstAttribute="top" secondItem="eMP-5V-xX2" secondAttribute="bottom" constant="47" id="fYa-X6-Ozp"/>
+                            <constraint firstItem="jz7-uS-xpD" firstAttribute="baseline" secondItem="dmE-L5-Y55" secondAttribute="baseline" id="gLV-ZL-w8P"/>
+                            <constraint firstItem="dmE-L5-Y55" firstAttribute="leading" secondItem="jz7-uS-xpD" secondAttribute="trailing" constant="60" id="gc3-wG-oYX"/>
+                            <constraint firstItem="eMP-5V-xX2" firstAttribute="leading" secondItem="jFa-Uu-fij" secondAttribute="trailing" constant="9" id="iWn-AU-pBC"/>
+                            <constraint firstItem="jFt-sR-nuD" firstAttribute="trailing" secondItem="CVm-uk-ine" secondAttribute="trailing" id="jJG-rn-V3N"/>
+                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="0k0-uy-xtv" secondAttribute="trailing" constant="20" symbolic="YES" id="koO-Jy-zOT"/>
+                            <constraint firstItem="Roy-47-I6S" firstAttribute="leading" secondItem="gvW-Eu-zLm" secondAttribute="leading" constant="20" id="l5f-Q3-S2m"/>
+                            <constraint firstItem="CVm-uk-ine" firstAttribute="top" secondItem="eMP-5V-xX2" secondAttribute="bottom" constant="12" symbolic="YES" id="oDf-TA-gfu"/>
+                            <constraint firstAttribute="trailing" secondItem="jFt-sR-nuD" secondAttribute="trailing" constant="19" id="owp-os-5Oh"/>
                             <constraint firstItem="X8W-zP-y0k" firstAttribute="leading" secondItem="gvW-Eu-zLm" secondAttribute="leading" constant="20" id="rnA-6r-2qW"/>
-                            <constraint firstAttribute="trailing" secondItem="Pqd-pM-Qse" secondAttribute="trailing" constant="15" id="stz-b9-RhQ"/>
-                            <constraint firstItem="jFt-sR-nuD" firstAttribute="top" secondItem="gvW-Eu-zLm" secondAttribute="top" constant="95" id="xdS-AE-6hV"/>
+                            <constraint firstItem="dmE-L5-Y55" firstAttribute="leading" secondItem="0k0-uy-xtv" secondAttribute="leading" id="yPP-Lt-4Wz"/>
+                            <constraint firstItem="jFt-sR-nuD" firstAttribute="top" secondItem="gvW-Eu-zLm" secondAttribute="top" constant="214" id="zcq-im-2zG"/>
+                            <constraint firstItem="0k0-uy-xtv" firstAttribute="top" secondItem="dmE-L5-Y55" secondAttribute="bottom" constant="13" id="zmi-lr-VzS"/>
                         </constraints>
                     </view>
                     <connections>

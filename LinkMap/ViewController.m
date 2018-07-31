@@ -185,7 +185,7 @@
         }
     }
     
-    [_result appendFormat:@"\r\n总大小: %.2fM\r\n",(totalSize/1024.0/1024.0)];
+    [_result appendFormat:@"\r\n总大小: %.2fM\r\n",(totalSize/1000.0/1000.0)];
 }
 
 
@@ -234,7 +234,7 @@
         }
     }
     
-    [_result appendFormat:@"\r\n总大小: %.2fM\r\n",(totalSize/1024.0/1024.0)];
+    [_result appendFormat:@"\r\n总大小: %.2fM\r\n",(totalSize/1000.0/1000.0)];
 }
 
 - (IBAction)ouputFile:(id)sender {
@@ -257,10 +257,10 @@
 
 - (void)appendResultWithSymbol:(SymbolModel *)model {
     NSString *size = nil;
-    if (model.size / 1024.0 / 1024.0 > 1) {
-        size = [NSString stringWithFormat:@"%.2fM", model.size / 1024.0 / 1024.0];
+    if (model.size / 1000.0 / 1000.0 > 1) {
+        size = [NSString stringWithFormat:@"%.2fM", model.size / 1000.0 / 1000.0];
     } else {
-        size = [NSString stringWithFormat:@"%.2fK", model.size / 1024.0];
+        size = [NSString stringWithFormat:@"%.2fK", model.size / 1000.0];
     }
     [_result appendFormat:@"%@\t%@\r\n",size, [[model.file componentsSeparatedByString:@"/"] lastObject]];
 }
