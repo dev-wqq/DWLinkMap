@@ -673,7 +673,7 @@
         <!--View Controller-->
         <scene sceneID="KCa-5Z-j0G">
             <objects>
-                <viewController id="NOm-F0-hfk" customClass="ViewController" sceneMemberID="viewController">
+                <viewController id="NOm-F0-hfk" customClass="DWViewController" sceneMemberID="viewController">
                     <view key="view" id="gvW-Eu-zLm">
                         <rect key="frame" x="0.0" y="0.0" width="640" height="480"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -685,7 +685,7 @@
                                     <font key="font" size="13" name=".PingFangSC-Regular"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="chooseFile:" target="NOm-F0-hfk" id="DkB-eI-jnN"/>
+                                    <action selector="chooseHistoryVersionFilePath:" target="NOm-F0-hfk" id="jAJ-g7-Xca"/>
                                 </connections>
                             </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="X8W-zP-y0k">
@@ -757,7 +757,7 @@
                                     <font key="font" size="13" name=".PingFangSC-Regular"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="chooseFile:" target="NOm-F0-hfk" id="CDY-Fu-3F9"/>
+                                    <action selector="chooseCurrentVersionFilePath:" target="NOm-F0-hfk" id="xiO-TX-XDo"/>
                                 </connections>
                             </button>
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="fu1-4S-rjX">
@@ -823,7 +823,7 @@
                                     <font key="font" size="13" name=".PingFangSC-Regular"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="chooseFile:" target="NOm-F0-hfk" id="TYs-rW-Irw"/>
+                                    <action selector="chooseWhitelistFilePath:" target="NOm-F0-hfk" id="Scp-b4-k4C"/>
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" verticalCompressionResistancePriority="751" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="I8M-DG-WSk">
@@ -877,10 +877,18 @@
                     <connections>
                         <outlet property="contentTextView" destination="zLH-fS-KrC" id="EQv-WP-zCh"/>
                         <outlet property="contentView" destination="jFt-sR-nuD" id="6Ed-sl-IqD"/>
+                        <outlet property="currentPathField" destination="jFa-Uu-fij" id="yvn-FU-rIb"/>
+                        <outlet property="fileDiffButton" destination="gvW-Eu-zLm" id="BQ5-ab-m8X"/>
                         <outlet property="filePathField" destination="X8W-zP-y0k" id="hGg-O0-t1y"/>
                         <outlet property="groupButton" destination="jz7-uS-xpD" id="nK4-ZM-mU8"/>
+                        <outlet property="historyPathField" destination="X8W-zP-y0k" id="pdI-Hf-8iB"/>
                         <outlet property="indicator" destination="VoU-Xv-rpc" id="2Qo-ph-PHj"/>
+                        <outlet property="moreThan100KB" destination="uSH-cG-RZ6" id="kwX-MD-w9S"/>
+                        <outlet property="moreThan50KB" destination="Ekq-27-4RW" id="kPD-sU-QaE"/>
                         <outlet property="searchField" destination="xh9-IL-MDL" id="auu-IH-1sH"/>
+                        <outlet property="sizeDiffButton" destination="fu1-4S-rjX" id="Wab-eZ-1xu"/>
+                        <outlet property="topFiveButton" destination="dmE-L5-Y55" id="Xb4-dL-rsY"/>
+                        <outlet property="whitelistPathField" destination="Roy-47-I6S" id="uNH-KU-nHR"/>
                     </connections>
                 </viewController>
                 <customObject id="oj6-h6-igk" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

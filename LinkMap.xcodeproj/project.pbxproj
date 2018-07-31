@@ -9,10 +9,11 @@
 /* Begin PBXBuildFile section */
 		6E7367EA1CB7843200722B99 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E7367E91CB7843200722B99 /* AppDelegate.m */; };
 		6E7367ED1CB7843200722B99 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E7367EC1CB7843200722B99 /* main.m */; };
-		6E7367F01CB7843200722B99 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E7367EF1CB7843200722B99 /* ViewController.m */; };
+		6E7367F01CB7843200722B99 /* DWViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E7367EF1CB7843200722B99 /* DWViewController.m */; };
 		6E7367F21CB7843200722B99 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6E7367F11CB7843200722B99 /* Assets.xcassets */; };
 		6E7367F51CB7843200722B99 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6E7367F31CB7843200722B99 /* Main.storyboard */; };
 		6E73680C1CB784F100722B99 /* SymbolModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E73680B1CB784F100722B99 /* SymbolModel.m */; };
+		6F0BFC0E21105A9200CA4F7C /* DWSymbolViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F0BFC0D21105A9200CA4F7C /* DWSymbolViewModel.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,13 +21,15 @@
 		6E7367E81CB7843200722B99 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		6E7367E91CB7843200722B99 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		6E7367EC1CB7843200722B99 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		6E7367EE1CB7843200722B99 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		6E7367EF1CB7843200722B99 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		6E7367EE1CB7843200722B99 /* DWViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DWViewController.h; sourceTree = "<group>"; };
+		6E7367EF1CB7843200722B99 /* DWViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DWViewController.m; sourceTree = "<group>"; };
 		6E7367F11CB7843200722B99 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6E7367F41CB7843200722B99 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		6E7367F61CB7843200722B99 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6E73680A1CB784F100722B99 /* SymbolModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SymbolModel.h; sourceTree = "<group>"; };
 		6E73680B1CB784F100722B99 /* SymbolModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SymbolModel.m; sourceTree = "<group>"; };
+		6F0BFC0C21105A9200CA4F7C /* DWSymbolViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DWSymbolViewModel.h; sourceTree = "<group>"; };
+		6F0BFC0D21105A9200CA4F7C /* DWSymbolViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DWSymbolViewModel.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,10 +64,12 @@
 			children = (
 				6E7367E81CB7843200722B99 /* AppDelegate.h */,
 				6E7367E91CB7843200722B99 /* AppDelegate.m */,
-				6E7367EE1CB7843200722B99 /* ViewController.h */,
-				6E7367EF1CB7843200722B99 /* ViewController.m */,
+				6E7367EE1CB7843200722B99 /* DWViewController.h */,
+				6E7367EF1CB7843200722B99 /* DWViewController.m */,
 				6E73680A1CB784F100722B99 /* SymbolModel.h */,
 				6E73680B1CB784F100722B99 /* SymbolModel.m */,
+				6F0BFC0C21105A9200CA4F7C /* DWSymbolViewModel.h */,
+				6F0BFC0D21105A9200CA4F7C /* DWSymbolViewModel.m */,
 				6E7367F11CB7843200722B99 /* Assets.xcassets */,
 				6E7367F31CB7843200722B99 /* Main.storyboard */,
 				6E7367F61CB7843200722B99 /* Info.plist */,
@@ -150,7 +155,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6E7367F01CB7843200722B99 /* ViewController.m in Sources */,
+				6F0BFC0E21105A9200CA4F7C /* DWSymbolViewModel.m in Sources */,
+				6E7367F01CB7843200722B99 /* DWViewController.m in Sources */,
 				6E7367ED1CB7843200722B99 /* main.m in Sources */,
 				6E7367EA1CB7843200722B99 /* AppDelegate.m in Sources */,
 				6E73680C1CB784F100722B99 /* SymbolModel.m in Sources */,
