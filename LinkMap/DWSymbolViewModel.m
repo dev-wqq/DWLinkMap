@@ -7,7 +7,7 @@
 //
 
 #import "DWSymbolViewModel.h"
-#import "SymbolModel.h"
+#import "DWBaseModel.h"
 
 @interface DWSymbolViewModel ()
 
@@ -21,9 +21,9 @@
 }
 
 - (void)symbolMapFromContent:(NSString *)content {
-    NSMutableDictionary <NSString *,SymbolModel *>*symbolMap = [NSMutableDictionary new];
-    NSMutableDictionary <NSString *,SymbolModel *>*fileSymbolMap = [NSMutableDictionary new];
-    NSMutableDictionary <NSString *,DWSymbolSetModel *>*frameworkSymbolMap = [NSMutableDictionary new];
+    NSMutableDictionary <NSString *,DWSymbolModel *>*symbolMap = [NSMutableDictionary new];
+    NSMutableDictionary <NSString *,DWSymbolModel *>*fileSymbolMap = [NSMutableDictionary new];
+    NSMutableDictionary <NSString *,DWFrameWorkModel *>*frameworkSymbolMap = [NSMutableDictionary new];
     // 符号文件列表
     NSArray *lines = [content componentsSeparatedByString:@"\n"];
     
@@ -43,17 +43,17 @@
             if(reachFiles == YES && reachSections == NO && reachSymbols == NO) {
                 NSRange range = [line rangeOfString:@"]"];
                 if(range.location != NSNotFound) {
-                    SymbolModel *symbol = [SymbolModel new];
+                    DWSymbolModel *symbol = [DWSymbolModel new];
                     symbol.file = [line substringFromIndex:range.location+1];
                     NSString *key = [line substringToIndex:range.location+1];
                     symbolMap[key] = symbol;
                     fileSymbolMap[symbol.fileName] = symbol;
                     
-                    DWSymbolSetModel *setModel = frameworkSymbolMap[symbol.frameworkName];
+                    DWFrameWorkModel *setModel = frameworkSymbolMap[symbol.frameworkName];
                     if (setModel) {
                         [setModel.subMap setObject:symbol forKey:symbol.fileName];
                     } else {
-                        DWSymbolSetModel *frameworkModel = [DWSymbolSetModel new];
+                        DWFrameWorkModel *frameworkModel = [DWFrameWorkModel new];
                         frameworkModel.frameworkName = symbol.frameworkName;
                         frameworkModel.subMap = @{symbol.fileName:symbol}.mutableCopy;
                         frameworkSymbolMap[symbol.frameworkName] = frameworkModel;
@@ -68,9 +68,9 @@
                     NSRange range = [fileKeyAndName rangeOfString:@"]"];
                     if(range.location != NSNotFound) {
                         NSString *key = [fileKeyAndName substringToIndex:range.location+1];
-                        SymbolModel *symbol = symbolMap[key];
+                        DWSymbolModel *symbol = symbolMap[key];
                         
-                        DWSymbolSetModel *setModel = frameworkSymbolMap[symbol.frameworkName];
+                        DWFrameWorkModel *setModel = frameworkSymbolMap[symbol.frameworkName];
                         if(symbol) {
                             symbol.size += size;
                             setModel.size += size;
@@ -85,9 +85,35 @@
     _frameworkSymbolMap = frameworkSymbolMap;
 }
 
+- (void)combineHistoryViewModel:(DWSymbolViewModel *)historyViewModel {
+    NSMutableDictionary *temp = historyViewModel.frameworkSymbolMap.mutableCopy;
+    for (NSString *key in self.frameworkSymbolMap.allKeys) {
+        DWFrameWorkModel *curSetModel = self.frameworkSymbolMap[key];
+        DWFrameWorkModel *hisSetModel = historyViewModel.frameworkSymbolMap[key];
+        
+        curSetModel.historySize = hisSetModel.size;
+        curSetModel.historySubMap = hisSetModel.subMap;
+        if (!hisSetModel) {
+            curSetModel.frameworkName = [NSString stringWithFormat:@"新增 %@",curSetModel.frameworkName];
+        }
+        
+        [temp removeObjectForKey:key];
+    }
+    if (temp.allKeys.count > 0) {
+        for (NSString *key in temp.allKeys) {
+            DWFrameWorkModel *hisSetModel = temp[key];
+            DWFrameWorkModel *setModel = [[DWFrameWorkModel alloc] init];
+            setModel.subMap = hisSetModel.subMap;
+            setModel.historySubMap = hisSetModel.historySubMap;
+            setModel.historySize = hisSetModel.size;
+            setModel.frameworkName = [NSString stringWithFormat:@"已删除 %@",hisSetModel.frameworkName];
+            self.frameworkSymbolMap[hisSetModel.frameworkName] = setModel;
+        }
+    }
+}
 
-- (NSArray<DWSymbolSetModel *> *)sortSetSymbols {
-    NSArray *sortedSymbols = [self.frameworkSymbolMap.allValues sortedArrayUsingComparator:^NSComparisonResult(DWSymbolSetModel *  _Nonnull obj1, DWSymbolSetModel *  _Nonnull obj2) {
+- (NSArray<DWFrameWorkModel *> *)sortedFrameworks {
+    NSArray *sortedSymbols = [self.frameworkSymbolMap.allValues sortedArrayUsingComparator:^NSComparisonResult(DWFrameWorkModel *  _Nonnull obj1, DWFrameWorkModel *  _Nonnull obj2) {
         if(obj1.size > obj2.size) {
             return NSOrderedAscending;
         } else if (obj1.size < obj2.size) {

@@ -8,19 +8,23 @@
 
 #import <Foundation/Foundation.h>
 
-@class DWSymbolSetModel;
+@class DWSymbolModel;
+@class DWFrameWorkModel;
 @interface DWSymbolViewModel : NSObject
 
-@property (nonatomic, strong) NSMutableDictionary *symbolMap;
-@property (nonatomic, strong) NSMutableDictionary *fileSymbolMap;
-@property (nonatomic, strong) NSMutableDictionary *frameworkSymbolMap;
+@property (nonatomic, strong) NSMutableDictionary<NSString *,DWSymbolModel *>    *symbolMap;
+@property (nonatomic, strong) NSMutableDictionary<NSString *,DWSymbolModel *>    *fileSymbolMap;
+@property (nonatomic, strong) NSMutableDictionary<NSString *,DWFrameWorkModel *> *frameworkSymbolMap;
 
-@property (nonatomic, strong) NSURL *linkMapFileURL;
-
+@property (nonatomic, strong) NSURL    *linkMapFileURL;
 @property (nonatomic, strong) NSString *linkMapContent;
 
 - (void)symbolMapFromContent:(NSString *)content;
 
-- (NSArray<DWSymbolSetModel *> *)sortSetSymbols;
+- (void)combineHistoryViewModel:(DWSymbolViewModel *)historyViewModel;
+
+// framework 按照size排序
+- (NSArray<DWFrameWorkModel *> *)sortedFrameworks;
+
 
 @end

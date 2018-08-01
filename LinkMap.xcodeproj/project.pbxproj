@@ -12,8 +12,9 @@
 		6E7367F01CB7843200722B99 /* DWViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E7367EF1CB7843200722B99 /* DWViewController.m */; };
 		6E7367F21CB7843200722B99 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6E7367F11CB7843200722B99 /* Assets.xcassets */; };
 		6E7367F51CB7843200722B99 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6E7367F31CB7843200722B99 /* Main.storyboard */; };
-		6E73680C1CB784F100722B99 /* SymbolModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E73680B1CB784F100722B99 /* SymbolModel.m */; };
+		6E73680C1CB784F100722B99 /* DWBaseModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E73680B1CB784F100722B99 /* DWBaseModel.m */; };
 		6F0BFC0E21105A9200CA4F7C /* DWSymbolViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F0BFC0D21105A9200CA4F7C /* DWSymbolViewModel.m */; };
+		6F0BFC11211090F000CA4F7C /* DWCalculateHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F0BFC10211090F000CA4F7C /* DWCalculateHelper.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,10 +27,12 @@
 		6E7367F11CB7843200722B99 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6E7367F41CB7843200722B99 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		6E7367F61CB7843200722B99 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		6E73680A1CB784F100722B99 /* SymbolModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SymbolModel.h; sourceTree = "<group>"; };
-		6E73680B1CB784F100722B99 /* SymbolModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SymbolModel.m; sourceTree = "<group>"; };
+		6E73680A1CB784F100722B99 /* DWBaseModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DWBaseModel.h; sourceTree = "<group>"; };
+		6E73680B1CB784F100722B99 /* DWBaseModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DWBaseModel.m; sourceTree = "<group>"; };
 		6F0BFC0C21105A9200CA4F7C /* DWSymbolViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DWSymbolViewModel.h; sourceTree = "<group>"; };
 		6F0BFC0D21105A9200CA4F7C /* DWSymbolViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DWSymbolViewModel.m; sourceTree = "<group>"; };
+		6F0BFC0F211090F000CA4F7C /* DWCalculateHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DWCalculateHelper.h; sourceTree = "<group>"; };
+		6F0BFC10211090F000CA4F7C /* DWCalculateHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DWCalculateHelper.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,8 +69,10 @@
 				6E7367E91CB7843200722B99 /* AppDelegate.m */,
 				6E7367EE1CB7843200722B99 /* DWViewController.h */,
 				6E7367EF1CB7843200722B99 /* DWViewController.m */,
-				6E73680A1CB784F100722B99 /* SymbolModel.h */,
-				6E73680B1CB784F100722B99 /* SymbolModel.m */,
+				6E73680A1CB784F100722B99 /* DWBaseModel.h */,
+				6E73680B1CB784F100722B99 /* DWBaseModel.m */,
+				6F0BFC0F211090F000CA4F7C /* DWCalculateHelper.h */,
+				6F0BFC10211090F000CA4F7C /* DWCalculateHelper.m */,
 				6F0BFC0C21105A9200CA4F7C /* DWSymbolViewModel.h */,
 				6F0BFC0D21105A9200CA4F7C /* DWSymbolViewModel.m */,
 				6E7367F11CB7843200722B99 /* Assets.xcassets */,
@@ -159,7 +164,8 @@
 				6E7367F01CB7843200722B99 /* DWViewController.m in Sources */,
 				6E7367ED1CB7843200722B99 /* main.m in Sources */,
 				6E7367EA1CB7843200722B99 /* AppDelegate.m in Sources */,
-				6E73680C1CB784F100722B99 /* SymbolModel.m in Sources */,
+				6E73680C1CB784F100722B99 /* DWBaseModel.m in Sources */,
+				6F0BFC11211090F000CA4F7C /* DWCalculateHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

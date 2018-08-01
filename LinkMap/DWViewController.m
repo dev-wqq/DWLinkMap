@@ -2,13 +2,14 @@
 //  ViewController.m
 //  LinkMap
 //
-//  Created by Suteki(67111677@qq.com) on 4/8/16.
+//  
 //  Copyright © 2016 Apple. All rights reserved.
 //
 
 #import "DWViewController.h"
-#import "SymbolModel.h"
+#import "DWBaseModel.h"
 #import "DWSymbolViewModel.h"
+#import "DWCalculateHelper.h"
 
 typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     DWAnalyzeTypeNone   = 0,
@@ -139,26 +140,18 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     }];
 }
 
+#pragma mark - Analyze Methods
+
 - (IBAction)analyze:(id)sender {
-    BOOL isExistHistory   = YES;
-    BOOL isExistCurrent   = YES;
-    BOOL isExistWhitelist = YES;
-    if (!self.historyViewModel.linkMapFileURL || ![[NSFileManager defaultManager] fileExistsAtPath:[self.historyViewModel.linkMapFileURL path] isDirectory:nil]) {
-        isExistHistory = NO;
-    }
-    
-    if (!self.currentViewModel.linkMapFileURL || ![[NSFileManager defaultManager] fileExistsAtPath:[self.currentViewModel.linkMapFileURL path] isDirectory:nil]) {
-        isExistCurrent = NO;
-    }
-    
-    if (!_whitelistFileURL || ![[NSFileManager defaultManager] fileExistsAtPath:[_whitelistFileURL path] isDirectory:nil]) {
-        isExistWhitelist = NO;
-    }
+    // 判断路径是否获取成功 or 正确
+    BOOL isExistHistory   = [self fileExistsAtPathURL:self.historyViewModel.linkMapFileURL];
+    BOOL isExistCurrent   = [self fileExistsAtPathURL:self.currentViewModel.linkMapFileURL];
+    BOOL isExistWhitelist = [self fileExistsAtPathURL:self.whitelistFileURL];
     
     DWAnalyzeType type = DWAnalyzeTypeNone;
-    if (isExistHistory && isExistHistory && isExistWhitelist) {
+    if (isExistCurrent && isExistHistory && isExistWhitelist) {
         type = DWAnalyzeTypeCompareWithWhiteList;
-    } else if (isExistHistory && isExistHistory) {
+    } else if (isExistCurrent && isExistHistory) {
         type = DWAnalyzeTypeCompare;
     } else if ((isExistHistory || isExistCurrent) && isExistWhitelist) {
         type = DWAnalyzeTypeSingleWithWhiteList;
@@ -167,19 +160,28 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     } else {
         type = DWAnalyzeTypeNone;
     }
-    
-    if (type == DWAnalyzeTypeNone) {
-        [self showAlertWithText:@"请选择正确的 LinkMap 文件路径！！！"];
-        return;
-    } else if (type == DWAnalyzeTypeCompare || type == DWAnalyzeTypeCompareWithWhiteList) {
+
+    if (type == DWAnalyzeTypeCompare || type == DWAnalyzeTypeCompareWithWhiteList) {
         [self analyzeCompareVersion:type == DWAnalyzeTypeCompareWithWhiteList];
+    } else if (type == DWAnalyzeTypeSingle || type == DWAnalyzeTypeSingleWithWhiteList) {
+        [self analyzeSingleVersion:type == DWAnalyzeTypeSingleWithWhiteList];
+    } else {
+        [self showAlertWithText:@"请选择正确的 LinkMap 文件路径！！！"];
     }
 }
 
+#pragma mark - Analyze Single Link Map
+
+- (void)analyzeSingleVersion:(BOOL)isWhitelist {
+    
+}
+
+#pragma mark - Analyze Both Link Map
+
 - (void)analyzeCompareVersion:(BOOL)isWhitelist {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *historyContent = [self stringWithURL:self.historyViewModel.linkMapFileURL];
-        NSString *currentContent = [self stringWithURL:self.currentViewModel.linkMapFileURL];
+        NSString *historyContent = [self stringWithContentsOfURL:self.historyViewModel.linkMapFileURL];
+        NSString *currentContent = [self stringWithContentsOfURL:self.currentViewModel.linkMapFileURL];
         
         if (![self checkContent:historyContent]) {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -203,7 +205,7 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
 
         [self combineHistoryRecords];
         
-        NSArray <DWSymbolSetModel *>* sets = [self.currentViewModel sortSetSymbols];
+        NSArray <DWFrameWorkModel *>* sets = [self.currentViewModel sortedFrameworks];
         
         [self buildCompareResultWithSymbols:sets];
     
@@ -215,19 +217,12 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
         });
     });
 }
-                   
-- (NSString *)stringWithURL:(NSURL *)filePathURL {
-    NSString *content = [NSString stringWithContentsOfURL:filePathURL
-                                                        encoding:NSMacOSRomanStringEncoding
-                                                           error:nil];
-    return content;
-}
 
 - (void)combineHistoryRecords {
     NSMutableDictionary *temp = self.historyViewModel.frameworkSymbolMap.mutableCopy;
     for (NSString *key in self.currentViewModel.frameworkSymbolMap.allKeys) {
-        DWSymbolSetModel *curSetModel = self.currentViewModel.frameworkSymbolMap[key];
-        DWSymbolSetModel *hisSetModel = self.historyViewModel.frameworkSymbolMap[key];
+        DWFrameWorkModel *curSetModel = self.currentViewModel.frameworkSymbolMap[key];
+        DWFrameWorkModel *hisSetModel = self.historyViewModel.frameworkSymbolMap[key];
         
         curSetModel.historySize = hisSetModel.size;
         curSetModel.historySubMap = hisSetModel.subMap;
@@ -239,8 +234,8 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     }
     if (temp.allKeys.count > 0) {
         for (NSString *key in temp.allKeys) {
-            DWSymbolSetModel *hisSetModel = temp[key];
-            DWSymbolSetModel *setModel = [[DWSymbolSetModel alloc] init];
+            DWFrameWorkModel *hisSetModel = temp[key];
+            DWFrameWorkModel *setModel = [[DWFrameWorkModel alloc] init];
             setModel.subMap = hisSetModel.subMap;
             setModel.historySubMap = hisSetModel.historySubMap;
             setModel.historySize = hisSetModel.size;
@@ -251,8 +246,8 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
 }
 
 - (NSMutableDictionary *)symbolMapFromContent:(NSString *)content {
-    NSMutableDictionary <NSString *,SymbolModel *>*symbolMap = [NSMutableDictionary new];
-    NSMutableDictionary <NSString *,SymbolModel *>*fileSymbolMap = [NSMutableDictionary new];
+    NSMutableDictionary <NSString *,DWSymbolModel *>*symbolMap = [NSMutableDictionary new];
+    NSMutableDictionary <NSString *,DWSymbolModel *>*fileSymbolMap = [NSMutableDictionary new];
     // 符号文件列表
     NSArray *lines = [content componentsSeparatedByString:@"\n"];
     
@@ -272,7 +267,7 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
             if(reachFiles == YES && reachSections == NO && reachSymbols == NO) {
                 NSRange range = [line rangeOfString:@"]"];
                 if(range.location != NSNotFound) {
-                    SymbolModel *symbol = [SymbolModel new];
+                    DWSymbolModel *symbol = [DWSymbolModel new];
                     symbol.file = [line substringFromIndex:range.location+1];
                     NSString *key = [line substringToIndex:range.location+1];
                     symbolMap[key] = symbol;
@@ -287,7 +282,7 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
                     NSRange range = [fileKeyAndName rangeOfString:@"]"];
                     if(range.location != NSNotFound) {
                         NSString *key = [fileKeyAndName substringToIndex:range.location+1];
-                        SymbolModel *symbol = symbolMap[key];
+                        DWSymbolModel *symbol = symbolMap[key];
                         if(symbol) {
                             symbol.size += size;
                         }
@@ -299,28 +294,13 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     return fileSymbolMap;
 }
 
-- (NSArray *)sortSymbols:(NSArray *)symbols {
-    NSArray *sortedSymbols = [symbols sortedArrayUsingComparator:^NSComparisonResult(SymbolModel *  _Nonnull obj1, SymbolModel *  _Nonnull obj2) {
-        if(obj1.size > obj2.size) {
-            return NSOrderedAscending;
-        } else if (obj1.size < obj2.size) {
-            return NSOrderedDescending;
-        } else {
-            return NSOrderedSame;
-        }
-    }];
-    
-    return sortedSymbols;
-}
-
-
-- (void)buildCompareResultWithSymbols:(NSArray<DWSymbolSetModel *> *)symbols {
+- (void)buildCompareResultWithSymbols:(NSArray<DWFrameWorkModel *> *)symbols {
     self.result = [@"当前版本\t\t历史版本\t\t版本差异\t\t模块名称\r\n\r\n" mutableCopy];
     NSUInteger totalSize = 0;
     NSUInteger hisTotalSize = 0;
     
     NSString *searchKey = _searchField.stringValue;
-    for(DWSymbolSetModel *symbol in symbols) {
+    for(DWFrameWorkModel *symbol in symbols) {
         if (searchKey.length > 0) {
             if ([symbol.frameworkName containsString:searchKey]) {
                 [self appendResultWithSetSymbol:symbol];
@@ -334,57 +314,8 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
         }
     }
     
-    [_result appendFormat:@"\r\n当前版本总大小: %@\n历史版本总大小: %@\r\n",[self getSize:totalSize],[self getSize:hisTotalSize]];
+    [_result appendFormat:@"\r\n当前版本总大小: %@\n历史版本总大小: %@\r\n",[DWCalculateHelper calculateSize:totalSize],[DWCalculateHelper calculateSize:hisTotalSize]];
 }
-
-
-//- (void)buildCombinationResultWithSymbols:(NSArray *)symbols {
-//    self.result = [@"库大小\t库名称\r\n\r\n" mutableCopy];
-//    NSUInteger totalSize = 0;
-//
-//    NSMutableDictionary *combinationMap = [[NSMutableDictionary alloc] init];
-//
-//    for(SymbolModel *symbol in symbols) {
-//        NSString *name = [[symbol.file componentsSeparatedByString:@"/"] lastObject];
-//        if ([name hasSuffix:@")"] &&
-//            [name containsString:@"("]) {
-//            NSRange range = [name rangeOfString:@"("];
-//            NSString *component = [name substringToIndex:range.location];
-//
-//            SymbolModel *combinationSymbol = [combinationMap objectForKey:component];
-//            if (!combinationSymbol) {
-//                combinationSymbol = [[SymbolModel alloc] init];
-//                [combinationMap setObject:combinationSymbol forKey:component];
-//            }
-//
-//            combinationSymbol.size += symbol.size;
-//            combinationSymbol.file = component;
-//        } else {
-//            // symbol可能来自app本身的目标文件或者系统的动态库，在最后的结果中一起显示
-//            [combinationMap setObject:symbol forKey:symbol.file];
-//        }
-//    }
-//
-//    NSArray <SymbolModel *>*combinationSymbols = [combinationMap allValues];
-//
-//    NSArray *sortedSymbols = [self sortSymbols:combinationSymbols];
-//
-//    NSString *searchKey = _searchField.stringValue;
-//
-//    for(SymbolModel *symbol in sortedSymbols) {
-//        if (searchKey.length > 0) {
-//            if ([symbol.file containsString:searchKey]) {
-//                [self appendResultWithSymbol:symbol];
-//                totalSize += symbol.size;
-//            }
-//        } else {
-//            [self appendResultWithSymbol:symbol];
-//            totalSize += symbol.size;
-//        }
-//    }
-//
-//    [_result appendFormat:@"\r\n总大小: %.2fM\r\n",(totalSize/1000.0/1000.0)];
-//}
 
 - (IBAction)ouputFile:(id)sender {
     NSOpenPanel* panel = [NSOpenPanel openPanel];
@@ -404,38 +335,11 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     }];
 }
 
-- (NSString *)getSize:(NSInteger)size {
-    NSString *sizeStr = nil;
-    NSInteger temp = size / 1000.0 / 1000.0;
-    if (temp >= 1.0 || temp <= -1.0) {
-        sizeStr = [NSString stringWithFormat:@"%.2fM", size / 1000.0 / 1000.0];
-    } else {
-        sizeStr = [NSString stringWithFormat:@"%.2fK", size / 1000.0];
-    }
-    return sizeStr;
+- (void)appendResultWithSetSymbol:(DWFrameWorkModel *)model {
+    [_result appendFormat:@"%@\t\t%@\t\t%@\t\t%@\r\n",model.sizeStr, model.historySizeStr, model.differentSizeStr, model.frameworkName];
 }
 
-- (NSString *)getDiffSize:(NSInteger)size {
-    NSString *sizeStr = nil;
-    NSInteger temp = size / 1000.0 / 1000.0;
-    NSString *addOrReduce = size > 0 ? @"+" : @"";
-    if (temp >= 1.0 || temp <= -1.0) {
-        sizeStr = [NSString stringWithFormat:@"%@%.2fM", addOrReduce,size / 1000.0 / 1000.0];
-    } else {
-        sizeStr = [NSString stringWithFormat:@"%@%.2fK", addOrReduce, size / 1000.0];
-    }
-    return sizeStr;
-}
-
-- (void)appendResultWithSetSymbol:(DWSymbolSetModel *)model {
-    NSString *size = [self getSize:model.size];
-    NSString *historySize = [self getSize:model.historySize];
-    NSString *diffSize = [self getDiffSize:model.size - model.historySize];
-    
-    [_result appendFormat:@"%@\t\t%@\t\t%@\t\t%@\r\n",size, historySize, diffSize, model.frameworkName];
-}
-
-- (void)appendResultWithSymbol:(SymbolModel *)model {
+- (void)appendResultWithSymbol:(DWSymbolModel *)model {
     NSString *size = nil;
     if (model.size / 1000.0 / 1000.0 > 1) {
         size = [NSString stringWithFormat:@"%.2fM", model.size / 1000.0 / 1000.0];
@@ -443,6 +347,19 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
         size = [NSString stringWithFormat:@"%.2fK", model.size / 1000.0];
     }
     [_result appendFormat:@"%@\t%@\r\n",size, [[model.file componentsSeparatedByString:@"/"] lastObject]];
+}
+
+#pragma mark - Helper Methods
+
+- (NSString *)stringWithContentsOfURL:(NSURL *)filePathURL {
+    NSString *content = [NSString stringWithContentsOfURL:filePathURL
+                                                 encoding:NSMacOSRomanStringEncoding
+                                                    error:nil];
+    return content;
+}
+
+- (BOOL)fileExistsAtPathURL:(NSURL *)url {
+    return url && [[NSFileManager defaultManager] fileExistsAtPath:url.path isDirectory:nil];
 }
 
 - (BOOL)checkContent:(NSString *)content {

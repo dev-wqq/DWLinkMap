@@ -2,17 +2,43 @@
 //  SymbolModel.m
 //  LinkMap
 //
-//  Created by Suteki(67111677@qq.com) on 4/8/16.
+//  
 //  Copyright © 2016 Apple. All rights reserved.
 //
 
-#import "SymbolModel.h"
+#import "DWBaseModel.h"
+#import "DWCalculateHelper.h"
 
-@interface SymbolModel ()
+@implementation DWBaseModel
+
+- (NSString *)sizeStr {
+    return [DWCalculateHelper calculateSize:self.size];
+}
+
+- (NSString *)historySizeStr {
+    return [DWCalculateHelper calculateSize:self.historySize];
+}
+
+- (NSInteger)differentSize {
+    return self.size - self.historySize;
+}
+
+- (NSString *)differentSizeStr {
+    return [DWCalculateHelper calculateDiffSize:self.differentSize];
+}
 
 @end
 
-@implementation SymbolModel
+@interface DWSymbolModel ()
+
+/// 文件名称 库名称(文件名称.o)
+@property (nonatomic, copy) NSString *fileName;
+/// 库名称
+@property (nonatomic, copy) NSString *frameworkName;
+
+@end
+
+@implementation DWSymbolModel
 
 - (void)setFile:(NSString *)file {
     _fileName = nil;
@@ -49,6 +75,6 @@
 
 @end
 
-@implementation DWSymbolSetModel
+@implementation DWFrameWorkModel
 
 @end
