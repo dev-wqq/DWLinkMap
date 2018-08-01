@@ -43,4 +43,7 @@
 /// 根据规则在界面上显示内容
 @property (nonatomic, strong)           NSArray<DWSymbolModel *> *displayArr;
 
+- (NSArray<DWSymbolModel *> *)sortedSymbols;
+- (NSArray<DWSymbolModel *> *)sortedDiffSizeSymbols;
+
 @end

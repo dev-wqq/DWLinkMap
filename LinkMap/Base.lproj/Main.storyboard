@@ -679,7 +679,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ALr-eZ-fys">
-                                <rect key="frame" x="117" y="438" width="509" height="32"/>
+                                <rect key="frame" x="117" y="438" width="381" height="32"/>
                                 <buttonCell key="cell" type="push" title="选择历史版本linkMap" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="rtu-TP-JO9">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" size="13" name=".PingFangSC-Regular"/>
@@ -751,7 +751,7 @@
                                 </textFieldCell>
                             </textField>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="eMP-5V-xX2">
-                                <rect key="frame" x="118" y="403" width="509" height="32"/>
+                                <rect key="frame" x="118" y="403" width="380" height="32"/>
                                 <buttonCell key="cell" type="push" title="选择当前版本LinkMap" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="J4o-hC-RPP">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" size="13" name=".PingFangSC-Regular"/>
@@ -761,15 +761,8 @@
                                 </connections>
                             </button>
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="fu1-4S-rjX">
-                                <rect key="frame" x="18" y="320" width="102" height="18"/>
-                                <buttonCell key="cell" type="check" title="对比Size差异" bezelStyle="regularSquare" imagePosition="left" inset="2" id="1T5-ee-6wq">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" size="13" name=".PingFangSC-Regular"/>
-                                </buttonCell>
-                            </button>
-                            <button translatesAutoresizingMaskIntoConstraints="NO" id="0k0-uy-xtv">
-                                <rect key="frame" x="163" y="320" width="102" height="18"/>
-                                <buttonCell key="cell" type="check" title="对比文件差异" bezelStyle="regularSquare" imagePosition="left" inset="2" id="dS5-IG-GwQ">
+                                <rect key="frame" x="18" y="320" width="350" height="18"/>
+                                <buttonCell key="cell" type="check" title="是否按照差异size排序，默认按照当前版本size降序排序" bezelStyle="regularSquare" imagePosition="left" inset="2" id="1T5-ee-6wq">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" size="13" name=".PingFangSC-Regular"/>
                                 </buttonCell>
@@ -782,17 +775,9 @@
                                 </buttonCell>
                             </button>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uSH-cG-RZ6">
-                                <rect key="frame" x="382" y="347" width="103" height="18"/>
+                                <rect key="frame" x="362" y="347" width="98" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="显示&gt;=100kB" bezelStyle="regularSquare" imagePosition="left" inset="2" id="f2j-mJ-ODw">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" size="13" name=".PingFangSC-Regular"/>
-                                </buttonCell>
-                            </button>
-                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ekq-27-4RW">
-                                <rect key="frame" x="524" y="345" width="98" height="18"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="显示&gt;=50kB" bezelStyle="regularSquare" imagePosition="left" inset="2" id="Pgk-5g-vq2">
+                                <buttonCell key="cell" type="check" title="显示&gt;=50kB" bezelStyle="regularSquare" imagePosition="left" inset="2" id="f2j-mJ-ODw">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" size="13" name=".PingFangSC-Regular"/>
                                 </buttonCell>
@@ -817,7 +802,7 @@
                                 </textFieldCell>
                             </textField>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="CVm-uk-ine">
-                                <rect key="frame" x="118" y="370" width="509" height="32"/>
+                                <rect key="frame" x="118" y="370" width="380" height="32"/>
                                 <buttonCell key="cell" type="push" title="只分析模块白名单路径" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Jw6-fM-Vwa">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" size="13" name=".PingFangSC-Regular"/>
@@ -837,6 +822,48 @@
                                     <action selector="analyze:" target="NOm-F0-hfk" id="0xl-Fv-JBG"/>
                                 </connections>
                             </button>
+                            <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dlP-iU-ITm">
+                                <rect key="frame" x="472" y="344" width="148" height="22"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="单位KB，如果这个按照设置的大小" drawsBackground="YES" id="RgS-KK-YXX">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vOn-A5-RVq">
+                                <rect key="frame" x="505" y="439" width="120" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="取消" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="jlO-lu-nCy">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" size="13" name=".PingFangSC-Regular"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="cancelHistoryLinkMap:" target="NOm-F0-hfk" id="QxI-Bt-R3G"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pdl-Y4-DQI">
+                                <rect key="frame" x="505" y="405" width="120" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="取消" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="vKh-yp-TTg">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" size="13" name=".PingFangSC-Regular"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="cancaelCurrentLinkMap:" target="NOm-F0-hfk" id="lA3-v8-T98"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Hp3-7N-hze">
+                                <rect key="frame" x="505" y="372" width="120" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="取消" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="E8J-0F-1Nz">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" size="13" name=".PingFangSC-Regular"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="cancelWhiteList:" target="NOm-F0-hfk" id="QIy-pA-3dp"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
                             <constraint firstItem="ALr-eZ-fys" firstAttribute="top" secondItem="gvW-Eu-zLm" secondAttribute="top" constant="14" id="0jK-6m-s4M"/>
@@ -850,7 +877,7 @@
                             <constraint firstItem="fu1-4S-rjX" firstAttribute="top" secondItem="jz7-uS-xpD" secondAttribute="bottom" constant="13" id="UxU-me-rxA"/>
                             <constraint firstItem="eMP-5V-xX2" firstAttribute="top" secondItem="ALr-eZ-fys" secondAttribute="bottom" constant="14" id="VgL-hG-FXc"/>
                             <constraint firstItem="X8W-zP-y0k" firstAttribute="top" secondItem="ALr-eZ-fys" secondAttribute="top" id="XrO-Iy-nWp"/>
-                            <constraint firstAttribute="trailing" secondItem="ALr-eZ-fys" secondAttribute="trailing" constant="20" id="XyU-Rh-gZX"/>
+                            <constraint firstAttribute="trailing" secondItem="ALr-eZ-fys" secondAttribute="trailing" constant="148" id="XyU-Rh-gZX"/>
                             <constraint firstItem="jz7-uS-xpD" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="gvW-Eu-zLm" secondAttribute="leading" constant="20" symbolic="YES" id="ZaG-vJ-QQt"/>
                             <constraint firstItem="jFa-Uu-fij" firstAttribute="leading" secondItem="gvW-Eu-zLm" secondAttribute="leading" constant="20" id="Znt-h2-erP"/>
                             <constraint firstItem="CVm-uk-ine" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Roy-47-I6S" secondAttribute="trailing" constant="8" symbolic="YES" id="aHs-S3-4ed"/>
@@ -858,35 +885,36 @@
                             <constraint firstItem="eMP-5V-xX2" firstAttribute="centerY" secondItem="jFa-Uu-fij" secondAttribute="centerY" id="cUJ-So-NVb"/>
                             <constraint firstItem="jz7-uS-xpD" firstAttribute="leading" secondItem="fu1-4S-rjX" secondAttribute="leading" id="cos-60-Gbn"/>
                             <constraint firstItem="jFt-sR-nuD" firstAttribute="leading" secondItem="gvW-Eu-zLm" secondAttribute="leading" constant="20" id="eZS-dr-230"/>
-                            <constraint firstItem="eMP-5V-xX2" firstAttribute="trailing" secondItem="ALr-eZ-fys" secondAttribute="trailing" constant="1" id="fNK-lK-ygb"/>
+                            <constraint firstItem="eMP-5V-xX2" firstAttribute="trailing" secondItem="ALr-eZ-fys" secondAttribute="trailing" id="fNK-lK-ygb"/>
                             <constraint firstItem="dmE-L5-Y55" firstAttribute="top" secondItem="eMP-5V-xX2" secondAttribute="bottom" constant="47" id="fYa-X6-Ozp"/>
                             <constraint firstItem="jz7-uS-xpD" firstAttribute="baseline" secondItem="dmE-L5-Y55" secondAttribute="baseline" id="gLV-ZL-w8P"/>
                             <constraint firstItem="dmE-L5-Y55" firstAttribute="leading" secondItem="jz7-uS-xpD" secondAttribute="trailing" constant="60" id="gc3-wG-oYX"/>
                             <constraint firstItem="eMP-5V-xX2" firstAttribute="leading" secondItem="jFa-Uu-fij" secondAttribute="trailing" constant="9" id="iWn-AU-pBC"/>
-                            <constraint firstItem="jFt-sR-nuD" firstAttribute="trailing" secondItem="CVm-uk-ine" secondAttribute="trailing" id="jJG-rn-V3N"/>
-                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="0k0-uy-xtv" secondAttribute="trailing" constant="20" symbolic="YES" id="koO-Jy-zOT"/>
+                            <constraint firstItem="jFt-sR-nuD" firstAttribute="trailing" secondItem="CVm-uk-ine" secondAttribute="trailing" constant="129" id="jJG-rn-V3N"/>
                             <constraint firstItem="Roy-47-I6S" firstAttribute="leading" secondItem="gvW-Eu-zLm" secondAttribute="leading" constant="20" id="l5f-Q3-S2m"/>
                             <constraint firstItem="CVm-uk-ine" firstAttribute="top" secondItem="eMP-5V-xX2" secondAttribute="bottom" constant="12" symbolic="YES" id="oDf-TA-gfu"/>
                             <constraint firstAttribute="trailing" secondItem="jFt-sR-nuD" secondAttribute="trailing" constant="19" id="owp-os-5Oh"/>
                             <constraint firstItem="X8W-zP-y0k" firstAttribute="leading" secondItem="gvW-Eu-zLm" secondAttribute="leading" constant="20" id="rnA-6r-2qW"/>
-                            <constraint firstItem="dmE-L5-Y55" firstAttribute="leading" secondItem="0k0-uy-xtv" secondAttribute="leading" id="yPP-Lt-4Wz"/>
                             <constraint firstItem="jFt-sR-nuD" firstAttribute="top" secondItem="gvW-Eu-zLm" secondAttribute="top" constant="214" id="zcq-im-2zG"/>
-                            <constraint firstItem="0k0-uy-xtv" firstAttribute="top" secondItem="dmE-L5-Y55" secondAttribute="bottom" constant="13" id="zmi-lr-VzS"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="changeDisplayField" destination="dlP-iU-ITm" id="9go-EV-man"/>
+                        <outlet property="changeDisplayKB" destination="gvW-Eu-zLm" id="ygv-NZ-mJk"/>
                         <outlet property="contentTextView" destination="zLH-fS-KrC" id="EQv-WP-zCh"/>
                         <outlet property="contentView" destination="jFt-sR-nuD" id="6Ed-sl-IqD"/>
                         <outlet property="currentPathField" destination="jFa-Uu-fij" id="yvn-FU-rIb"/>
+                        <outlet property="dispalyKBField" destination="dlP-iU-ITm" id="IZz-46-gDW"/>
                         <outlet property="fileDiffButton" destination="gvW-Eu-zLm" id="BQ5-ab-m8X"/>
                         <outlet property="filePathField" destination="X8W-zP-y0k" id="hGg-O0-t1y"/>
                         <outlet property="groupButton" destination="jz7-uS-xpD" id="nK4-ZM-mU8"/>
                         <outlet property="historyPathField" destination="X8W-zP-y0k" id="pdI-Hf-8iB"/>
                         <outlet property="indicator" destination="VoU-Xv-rpc" id="2Qo-ph-PHj"/>
                         <outlet property="moreThan100KB" destination="uSH-cG-RZ6" id="kwX-MD-w9S"/>
-                        <outlet property="moreThan50KB" destination="Ekq-27-4RW" id="kPD-sU-QaE"/>
+                        <outlet property="moreThanSize" destination="uSH-cG-RZ6" id="ZCy-Eo-3Ue"/>
                         <outlet property="searchField" destination="xh9-IL-MDL" id="auu-IH-1sH"/>
                         <outlet property="sizeDiffButton" destination="fu1-4S-rjX" id="Wab-eZ-1xu"/>
+                        <outlet property="sortedDiffButton" destination="fu1-4S-rjX" id="7bH-oH-pbT"/>
                         <outlet property="topFiveButton" destination="dmE-L5-Y55" id="Xb4-dL-rsY"/>
                         <outlet property="whitelistPathField" destination="Roy-47-I6S" id="uNH-KU-nHR"/>
                     </connections>

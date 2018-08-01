@@ -8,6 +8,9 @@
 
 #import "DWSymbolViewModel.h"
 #import "DWBaseModel.h"
+#import "DWCalculateHelper.h"
+
+NSInteger const kShowTopNumber = 5;
 
 @interface DWSymbolViewModel ()
 
@@ -18,6 +21,10 @@
 - (void)setLinkMapContent:(NSString *)linkMapContent {
     _linkMapContent = linkMapContent;
     [self symbolMapFromContent:linkMapContent];
+}
+
+- (NSUInteger)moreThanSize {
+    return _moreThanSize == 0 ? 50 : _moreThanSize;
 }
 
 - (void)symbolMapFromContent:(NSString *)content {
@@ -85,11 +92,42 @@
     _frameworkSymbolMap = frameworkSymbolMap;
 }
 
-- (void)combineHistoryViewModel:(DWSymbolViewModel *)historyViewModel {
-    NSMutableDictionary *temp = historyViewModel.frameworkSymbolMap.mutableCopy;
+- (NSArray<DWFrameWorkModel *> *)sortedFrameworks {
+    
+    NSArray *sortedSymbols = [self.frameworkSymbolMap.allValues sortedArrayUsingComparator:^NSComparisonResult(DWFrameWorkModel *  _Nonnull obj1, DWFrameWorkModel *  _Nonnull obj2) {
+        if(obj1.size > obj2.size) {
+            return NSOrderedAscending;
+        } else if (obj1.size < obj2.size) {
+            return NSOrderedDescending;
+        } else {
+            return NSOrderedSame;
+        }
+    }];
+    return sortedSymbols;
+}
+
+- (void)buildCompareResult {
+    if (self.frameworkAnalyze) {
+        [self combineHistoryByFramework];
+        [self buildCompareFrameworkResult];
+    } else {
+        [self combineHistoryByFile];
+    }
+    
+}
+
+
+- (void)combineHistoryByFile {
+    
+}
+
+#pragma make - 按照framework 分组
+
+- (void)combineHistoryByFramework {
+    NSMutableDictionary *temp = self.historyViewModel.frameworkSymbolMap.mutableCopy;
     for (NSString *key in self.frameworkSymbolMap.allKeys) {
         DWFrameWorkModel *curSetModel = self.frameworkSymbolMap[key];
-        DWFrameWorkModel *hisSetModel = historyViewModel.frameworkSymbolMap[key];
+        DWFrameWorkModel *hisSetModel = self.historyViewModel.frameworkSymbolMap[key];
         
         curSetModel.historySize = hisSetModel.size;
         curSetModel.historySubMap = hisSetModel.subMap;
@@ -97,6 +135,28 @@
             curSetModel.frameworkName = [NSString stringWithFormat:@"新增 %@",curSetModel.frameworkName];
         }
         
+        // 只显示top5
+        if (_showTop5 || _showMoreThanSize) {
+            NSArray *array = self.sortedDiffSize ? curSetModel.sortedDiffSizeSymbols : curSetModel.sortedSymbols;
+            NSMutableArray *subArray = [NSMutableArray array];
+            NSInteger count = curSetModel.subMap.allValues.count;
+            if (self.showTop5) {
+                count = array.count > kShowTopNumber ? kShowTopNumber : array.count;
+            }
+            for (int i = 0; i < count; i++) {
+                DWSymbolModel *symbolModel = array[i];
+                DWSymbolModel *historySymbolModel = curSetModel.historySubMap[symbolModel.fileName];
+                symbolModel.historySize = historySymbolModel.size;
+                if (_showMoreThanSize && symbolModel.size >= self.moreThanSize*kCalculateConstant) {
+                    [subArray addObject:symbolModel];
+                } else if (_showMoreThanSize && symbolModel.size < self.moreThanSize*kCalculateConstant) {
+                    break;
+                } else {
+                    [subArray addObject:symbolModel];
+                }
+            }
+            curSetModel.displayArr = subArray.copy;
+        }
         [temp removeObjectForKey:key];
     }
     if (temp.allKeys.count > 0) {
@@ -112,17 +172,45 @@
     }
 }
 
-- (NSArray<DWFrameWorkModel *> *)sortedFrameworks {
-    NSArray *sortedSymbols = [self.frameworkSymbolMap.allValues sortedArrayUsingComparator:^NSComparisonResult(DWFrameWorkModel *  _Nonnull obj1, DWFrameWorkModel *  _Nonnull obj2) {
-        if(obj1.size > obj2.size) {
-            return NSOrderedAscending;
-        } else if (obj1.size < obj2.size) {
-            return NSOrderedDescending;
+- (void)buildCompareFrameworkResult {
+    NSArray<DWFrameWorkModel *> *frameworks = [self sortedFrameworks];
+    self.result = [@"序号\t\t当前版本\t\t历史版本\t\t版本差异\t\t模块名称\r\n\r\n" mutableCopy];
+    NSUInteger totalSize = 0;
+    NSUInteger hisTotalSize = 0;
+    
+    NSString *searchKey = _searchkey;
+    for (int index = 0; index < frameworks.count; index++) {
+        DWFrameWorkModel *symbol = frameworks[index];
+        if (searchKey.length > 0) {
+            if ([symbol.frameworkName containsString:searchKey]) {
+                [self appendResultWithSetSymbol:symbol index:index+1];
+                totalSize += symbol.size;
+                hisTotalSize += symbol.historySize;
+            }
         } else {
-            return NSOrderedSame;
+            [self appendResultWithSetSymbol:symbol index:index+1];
+            totalSize += symbol.size;
+            hisTotalSize += symbol.historySize;
         }
-    }];
-    return sortedSymbols;
+    }
+    [_result appendFormat:@"\r\n当前版本总大小: %@\n历史版本总大小: %@\r\n",[DWCalculateHelper calculateSize:totalSize],[DWCalculateHelper calculateSize:hisTotalSize]];
+}
+
+- (void)appendResultWithSetSymbol:(DWFrameWorkModel *)model index:(NSInteger)index {
+    [_result appendFormat:@"%ld\t\t%@\t\t%@\t\t%@\t\t%@\r\n",index,model.sizeStr, model.historySizeStr, model.differentSizeStr, model.frameworkName];
+    if (model.displayArr.count > 0) {
+        for (DWSymbolModel *fileModel in model.displayArr) {
+            [_result appendFormat:@"  \t\t%@\t\t%@\t\t%@\t\t%@\r\n",fileModel.sizeStr, fileModel.historySizeStr, fileModel.differentSizeStr, fileModel.fileName];
+        }
+        [_result appendFormat:@"\r\n"];
+    }
+}
+
+- (NSMutableString *)result {
+    if (!_result) {
+        _result = [[NSMutableString alloc] initWithString:@""];
+    }
+    return _result;
 }
 
 @end

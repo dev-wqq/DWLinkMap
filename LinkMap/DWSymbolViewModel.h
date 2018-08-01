@@ -19,12 +19,26 @@
 @property (nonatomic, strong) NSURL    *linkMapFileURL;
 @property (nonatomic, strong) NSString *linkMapContent;
 
-- (void)symbolMapFromContent:(NSString *)content;
+@property (nonatomic, assign) BOOL frameworkAnalyze;
+@property (nonatomic, assign) BOOL showTop5;
+@property (nonatomic, assign) BOOL showMoreThanSize;
+@property (nonatomic, assign) BOOL sortedDiffSize;
 
-- (void)combineHistoryViewModel:(DWSymbolViewModel *)historyViewModel;
+@property (nonatomic, copy) NSString *searchkey;
+
+@property (nonatomic, strong) NSMutableString *result;
+
+/// default
+@property (nonatomic, assign) NSUInteger moreThanSize;
+
+@property (nonatomic, strong) DWSymbolViewModel *historyViewModel;
+
+- (void)buildCompareResult;
 
 // framework 按照size排序
 - (NSArray<DWFrameWorkModel *> *)sortedFrameworks;
+
+
 
 
 @end

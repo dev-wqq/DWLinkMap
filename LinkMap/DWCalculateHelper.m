@@ -8,7 +8,7 @@
 
 #import "DWCalculateHelper.h"
 
-CGFloat const kCalculateConstant = 1000.0f;
+CGFloat const kCalculateConstant = 1000.0;
 
 @implementation DWCalculateHelper
 

@@ -77,4 +77,31 @@
 
 @implementation DWFrameWorkModel
 
+- (NSArray<DWSymbolModel *> *)sortedSymbols {
+    NSArray *sortedSymbols = [self.subMap.allValues sortedArrayUsingComparator:^NSComparisonResult(DWSymbolModel *  _Nonnull obj1, DWSymbolModel *  _Nonnull obj2) {
+        if(obj1.size > obj2.size) {
+            return NSOrderedAscending;
+        } else if (obj1.size < obj2.size) {
+            return NSOrderedDescending;
+        } else {
+            return NSOrderedSame;
+        }
+    }];
+    return sortedSymbols;
+}
+
+- (NSArray<DWSymbolModel *> *)sortedDiffSizeSymbols {
+    NSArray *sortedSymbols = [self.subMap.allValues sortedArrayUsingComparator:^NSComparisonResult(DWSymbolModel *  _Nonnull obj1, DWSymbolModel *  _Nonnull obj2) {
+        if(obj1.differentSize > obj2.differentSize) {
+            return NSOrderedAscending;
+        } else if (obj1.differentSize < obj2.differentSize) {
+            return NSOrderedDescending;
+        } else {
+            return NSOrderedSame;
+        }
+    }];
+    return sortedSymbols;
+}
+
+
 @end

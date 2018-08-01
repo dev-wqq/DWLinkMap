@@ -26,7 +26,6 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
 /// 当前版本选择的文件路径
 @property (weak) IBOutlet NSTextField *currentPathField;
 /// 白名单选择的文件路径
-
 @property (weak) IBOutlet NSTextField *whitelistPathField;
 
 /// 模块解析
@@ -34,21 +33,18 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
 /// 显示每个模块top5的文件
 @property (weak) IBOutlet NSButton *topFiveButton;
 /// 显示大于100KB
-@property (weak) IBOutlet NSButton *moreThan100KB;
-/// 显示大于50KB
-@property (weak) IBOutlet NSButton *moreThan50KB;
-
-/// 对比size的差异
-@property (weak) IBOutlet NSButton *sizeDiffButton;
-/// 对比文件的差异
-@property (strong) IBOutlet NSView *fileDiffButton;
-
-@property (weak) IBOutlet NSProgressIndicator *indicator;//指示器
+@property (weak) IBOutlet NSButton *moreThanSize;
+/// 是否按照差异size排序，默认按照当前版本size降序排序
+@property (weak) IBOutlet NSButton *sortedDiffButton;
+/// 指示器
+@property (weak) IBOutlet NSProgressIndicator *indicator;
+///
 @property (weak) IBOutlet NSTextField *searchField;
+///
+@property (weak) IBOutlet NSTextField *dispalyKBField;
 
 @property (weak) IBOutlet NSScrollView *contentView;//分析的内容
 @property (unsafe_unretained) IBOutlet NSTextView *contentTextView;
-
 
 @property (strong) NSURL *historyLinkMapFileURL;
 @property (strong) NSURL *currentLinkMapFileURL;
@@ -58,7 +54,7 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
 @property (strong) NSString *currentLinkMapContent;
 
 @property (nonatomic, strong) DWSymbolViewModel *historyViewModel;
-@property (nonatomic, strong) DWSymbolViewModel *currentViewModel;
+@property (nonatomic, strong) DWSymbolViewModel *viewModel;
 
 @property (strong) NSMutableString *result;//分析的结果
 
@@ -84,7 +80,22 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     7. * 勾选“分组解析”，然后点击“开始”。实现对不同库的目标文件进行分组";
     
     self.historyViewModel = [[DWSymbolViewModel alloc] init];
-    self.currentViewModel = [[DWSymbolViewModel alloc] init];
+    self.viewModel = [[DWSymbolViewModel alloc] init];
+}
+
+- (IBAction)cancaelCurrentLinkMap:(id)sender {
+    self.currentPathField.stringValue = @"当前版本路径";
+    self.viewModel.linkMapFileURL = nil;
+}
+
+- (IBAction)cancelHistoryLinkMap:(id)sender {
+    self.historyPathField.stringValue = @"历史版本路径";
+    self.historyViewModel.linkMapFileURL = nil;
+}
+
+- (IBAction)cancelWhiteList:(id)sender {
+    self.whitelistPathField.stringValue = @"分析白名单";
+    self.whitelistFileURL = nil;
 }
 
 #pragma make - Choose File Path
@@ -104,7 +115,7 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     [self beginWithCompletionHandler:^(BOOL result, NSURL *url, NSString *path) {
         if (result) {
             wself.currentPathField.stringValue = path;
-            wself.currentViewModel.linkMapFileURL  = url;
+            wself.viewModel.linkMapFileURL  = url;
         }
     }];
 }
@@ -145,7 +156,7 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
 - (IBAction)analyze:(id)sender {
     // 判断路径是否获取成功 or 正确
     BOOL isExistHistory   = [self fileExistsAtPathURL:self.historyViewModel.linkMapFileURL];
-    BOOL isExistCurrent   = [self fileExistsAtPathURL:self.currentViewModel.linkMapFileURL];
+    BOOL isExistCurrent   = [self fileExistsAtPathURL:self.viewModel.linkMapFileURL];
     BOOL isExistWhitelist = [self fileExistsAtPathURL:self.whitelistFileURL];
     
     DWAnalyzeType type = DWAnalyzeTypeNone;
@@ -161,6 +172,16 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
         type = DWAnalyzeTypeNone;
     }
 
+    // 负初始值
+    BOOL isGroupAnalyze = _groupButton.state == NSControlStateValueOn;
+    self.viewModel.frameworkAnalyze = isGroupAnalyze;
+    self.viewModel.showTop5 = isGroupAnalyze && _topFiveButton.state == NSControlStateValueOn;
+    self.viewModel.showMoreThanSize = isGroupAnalyze && _moreThanSize.state == NSControlStateValueOn;
+    self.viewModel.moreThanSize = _dispalyKBField.stringValue.integerValue;
+    self.viewModel.searchkey = _searchField.stringValue;
+    self.viewModel.sortedDiffSize = _sortedDiffButton.state == NSControlStateValueOn;
+    
+    // 方法调用
     if (type == DWAnalyzeTypeCompare || type == DWAnalyzeTypeCompareWithWhiteList) {
         [self analyzeCompareVersion:type == DWAnalyzeTypeCompareWithWhiteList];
     } else if (type == DWAnalyzeTypeSingle || type == DWAnalyzeTypeSingleWithWhiteList) {
@@ -179,49 +200,41 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
 #pragma mark - Analyze Both Link Map
 
 - (void)analyzeCompareVersion:(BOOL)isWhitelist {
+    [self startAnimation];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSString *historyContent = [self stringWithContentsOfURL:self.historyViewModel.linkMapFileURL];
-        NSString *currentContent = [self stringWithContentsOfURL:self.currentViewModel.linkMapFileURL];
+        NSString *currentContent = [self stringWithContentsOfURL:self.viewModel.linkMapFileURL];
         
         if (![self checkContent:historyContent]) {
             dispatch_async(dispatch_get_main_queue(), ^{
+                [self stopAnimation];
                 [self showAlertWithText:@"历史版本 LinkMap 文件格式有误"];
             });
             return ;
         }
         if (![self checkContent:currentContent]) {
             dispatch_async(dispatch_get_main_queue(), ^{
+                [self stopAnimation];
                 [self showAlertWithText:@"当前版本 LinkMap 文件格式有误"];
             });
             return ;
         }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.indicator.hidden = NO;
-            [self.indicator startAnimation:self];
-        });
         self.historyViewModel.linkMapContent = historyContent;
-        self.currentViewModel.linkMapContent = currentContent;
-
-        [self combineHistoryRecords];
-        
-        NSArray <DWFrameWorkModel *>* sets = [self.currentViewModel sortedFrameworks];
-        
-        [self buildCompareResultWithSymbols:sets];
+        self.viewModel.linkMapContent = currentContent;
+        self.viewModel.historyViewModel = self.historyViewModel;
+        [self.viewModel buildCompareResult];
     
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.contentTextView.string = _result;
-            self.indicator.hidden = YES;
-            [self.indicator stopAnimation:self];
-
+            self.contentTextView.string = self.viewModel.result;
+            [self stopAnimation];
         });
     });
 }
 
 - (void)combineHistoryRecords {
     NSMutableDictionary *temp = self.historyViewModel.frameworkSymbolMap.mutableCopy;
-    for (NSString *key in self.currentViewModel.frameworkSymbolMap.allKeys) {
-        DWFrameWorkModel *curSetModel = self.currentViewModel.frameworkSymbolMap[key];
+    for (NSString *key in self.viewModel.frameworkSymbolMap.allKeys) {
+        DWFrameWorkModel *curSetModel = self.viewModel.frameworkSymbolMap[key];
         DWFrameWorkModel *hisSetModel = self.historyViewModel.frameworkSymbolMap[key];
         
         curSetModel.historySize = hisSetModel.size;
@@ -240,7 +253,7 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
             setModel.historySubMap = hisSetModel.historySubMap;
             setModel.historySize = hisSetModel.size;
             setModel.frameworkName = [NSString stringWithFormat:@"已删除 %@",hisSetModel.frameworkName];
-            self.currentViewModel.frameworkSymbolMap[hisSetModel.frameworkName] = setModel;
+            self.viewModel.frameworkSymbolMap[hisSetModel.frameworkName] = setModel;
         }
     }
 }
@@ -330,7 +343,7 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
             NSMutableString *content =[[NSMutableString alloc]initWithCapacity:0];
             [content appendString:[theDoc path]];
             [content appendString:@"/linkMap.txt"];
-            [_result writeToFile:content atomically:YES encoding:NSUTF8StringEncoding error:nil];
+            [self.viewModel.result writeToFile:content atomically:YES encoding:NSUTF8StringEncoding error:nil];
         }
     }];
 }
@@ -349,12 +362,22 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     [_result appendFormat:@"%@\t%@\r\n",size, [[model.file componentsSeparatedByString:@"/"] lastObject]];
 }
 
+#pragma make - Animation Methods
+
+- (void)startAnimation {
+    self.indicator.hidden = NO;
+    [self.indicator startAnimation:self];
+}
+
+- (void)stopAnimation {
+    self.indicator.hidden = YES;
+    [self.indicator stopAnimation:self];
+}
+
 #pragma mark - Helper Methods
 
 - (NSString *)stringWithContentsOfURL:(NSURL *)filePathURL {
-    NSString *content = [NSString stringWithContentsOfURL:filePathURL
-                                                 encoding:NSMacOSRomanStringEncoding
-                                                    error:nil];
+    NSString *content = [NSString stringWithContentsOfURL:filePathURL encoding:NSMacOSRomanStringEncoding error:nil];
     return content;
 }
 
