@@ -27,6 +27,10 @@
     return [DWCalculateHelper calculateDiffSize:self.differentSize];
 }
 
+- (NSString *)showName {
+    return nil;
+}
+
 @end
 
 @interface DWSymbolModel ()
@@ -80,6 +84,10 @@
     return _displayFileName;
 }
 
+- (NSString *)showName {
+    return self.displayFileName;
+}
+
 @end
 
 @implementation DWFrameWorkModel
@@ -110,5 +118,8 @@
     return sortedSymbols;
 }
 
+- (NSString *)showName {
+    return self.frameworkName;
+}
 
 @end

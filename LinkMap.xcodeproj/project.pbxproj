@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		148D285AB7207B079C8F40BB /* libPods-LinkMap.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6272F166F212A7CBF5F95350 /* libPods-LinkMap.a */; };
 		6E7367EA1CB7843200722B99 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E7367E91CB7843200722B99 /* AppDelegate.m */; };
 		6E7367ED1CB7843200722B99 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E7367EC1CB7843200722B99 /* main.m */; };
 		6E7367F01CB7843200722B99 /* DWViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E7367EF1CB7843200722B99 /* DWViewController.m */; };
@@ -15,9 +16,13 @@
 		6E73680C1CB784F100722B99 /* DWBaseModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E73680B1CB784F100722B99 /* DWBaseModel.m */; };
 		6F0BFC0E21105A9200CA4F7C /* DWSymbolViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F0BFC0D21105A9200CA4F7C /* DWSymbolViewModel.m */; };
 		6F0BFC11211090F000CA4F7C /* DWCalculateHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F0BFC10211090F000CA4F7C /* DWCalculateHelper.m */; };
+		6FFAE2EE2112C6B400C40A9E /* DWSymbolViewModel+SingleLinkMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FFAE2ED2112C6B400C40A9E /* DWSymbolViewModel+SingleLinkMap.m */; };
+		6FFAE2F12112E15200C40A9E /* DWSymbolViewModel+ExportExecl.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FFAE2F02112E15200C40A9E /* DWSymbolViewModel+ExportExecl.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		17881D6EB8FFCD1817379497 /* Pods-LinkMap.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LinkMap.release.xcconfig"; path = "Pods/Target Support Files/Pods-LinkMap/Pods-LinkMap.release.xcconfig"; sourceTree = "<group>"; };
+		6272F166F212A7CBF5F95350 /* libPods-LinkMap.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-LinkMap.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E7367E51CB7843200722B99 /* LinkMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LinkMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E7367E81CB7843200722B99 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		6E7367E91CB7843200722B99 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -33,6 +38,11 @@
 		6F0BFC0D21105A9200CA4F7C /* DWSymbolViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DWSymbolViewModel.m; sourceTree = "<group>"; };
 		6F0BFC0F211090F000CA4F7C /* DWCalculateHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DWCalculateHelper.h; sourceTree = "<group>"; };
 		6F0BFC10211090F000CA4F7C /* DWCalculateHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DWCalculateHelper.m; sourceTree = "<group>"; };
+		6FFAE2EC2112C6B400C40A9E /* DWSymbolViewModel+SingleLinkMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DWSymbolViewModel+SingleLinkMap.h"; sourceTree = "<group>"; };
+		6FFAE2ED2112C6B400C40A9E /* DWSymbolViewModel+SingleLinkMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "DWSymbolViewModel+SingleLinkMap.m"; sourceTree = "<group>"; };
+		6FFAE2EF2112E15200C40A9E /* DWSymbolViewModel+ExportExecl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DWSymbolViewModel+ExportExecl.h"; sourceTree = "<group>"; };
+		6FFAE2F02112E15200C40A9E /* DWSymbolViewModel+ExportExecl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "DWSymbolViewModel+ExportExecl.m"; sourceTree = "<group>"; };
+		AF77373811A75F9D02211D89 /* Pods-LinkMap.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LinkMap.debug.xcconfig"; path = "Pods/Target Support Files/Pods-LinkMap/Pods-LinkMap.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,17 +50,29 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				148D285AB7207B079C8F40BB /* libPods-LinkMap.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		101979F1CC302561C377AAA0 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				AF77373811A75F9D02211D89 /* Pods-LinkMap.debug.xcconfig */,
+				17881D6EB8FFCD1817379497 /* Pods-LinkMap.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		6E7367DC1CB7843200722B99 = {
 			isa = PBXGroup;
 			children = (
 				6E7367E71CB7843200722B99 /* LinkMap */,
 				6E7367E61CB7843200722B99 /* Products */,
+				101979F1CC302561C377AAA0 /* Pods */,
+				C604C79CF2821EC219EB7CAF /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -75,6 +97,10 @@
 				6F0BFC10211090F000CA4F7C /* DWCalculateHelper.m */,
 				6F0BFC0C21105A9200CA4F7C /* DWSymbolViewModel.h */,
 				6F0BFC0D21105A9200CA4F7C /* DWSymbolViewModel.m */,
+				6FFAE2EC2112C6B400C40A9E /* DWSymbolViewModel+SingleLinkMap.h */,
+				6FFAE2ED2112C6B400C40A9E /* DWSymbolViewModel+SingleLinkMap.m */,
+				6FFAE2EF2112E15200C40A9E /* DWSymbolViewModel+ExportExecl.h */,
+				6FFAE2F02112E15200C40A9E /* DWSymbolViewModel+ExportExecl.m */,
 				6E7367F11CB7843200722B99 /* Assets.xcassets */,
 				6E7367F31CB7843200722B99 /* Main.storyboard */,
 				6E7367F61CB7843200722B99 /* Info.plist */,
@@ -91,6 +117,14 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		C604C79CF2821EC219EB7CAF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6272F166F212A7CBF5F95350 /* libPods-LinkMap.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -98,9 +132,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6E7368041CB7843200722B99 /* Build configuration list for PBXNativeTarget "LinkMap" */;
 			buildPhases = (
+				6D5B8C23E7EC97BBE4F1B900 /* [CP] Check Pods Manifest.lock */,
 				6E7367E11CB7843200722B99 /* Sources */,
 				6E7367E21CB7843200722B99 /* Frameworks */,
 				6E7367E31CB7843200722B99 /* Resources */,
+				CEFC12EEBE1705154AE3C01D /* [CP] Embed Pods Frameworks */,
+				C4030747FEAC9DC5853F2109 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -155,6 +192,57 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		6D5B8C23E7EC97BBE4F1B900 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-LinkMap-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C4030747FEAC9DC5853F2109 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-LinkMap/Pods-LinkMap-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CEFC12EEBE1705154AE3C01D /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-LinkMap/Pods-LinkMap-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		6E7367E11CB7843200722B99 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -165,7 +253,9 @@
 				6E7367ED1CB7843200722B99 /* main.m in Sources */,
 				6E7367EA1CB7843200722B99 /* AppDelegate.m in Sources */,
 				6E73680C1CB784F100722B99 /* DWBaseModel.m in Sources */,
+				6FFAE2F12112E15200C40A9E /* DWSymbolViewModel+ExportExecl.m in Sources */,
 				6F0BFC11211090F000CA4F7C /* DWCalculateHelper.m in Sources */,
+				6FFAE2EE2112C6B400C40A9E /* DWSymbolViewModel+SingleLinkMap.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -264,6 +354,7 @@
 		};
 		6E7368051CB7843200722B99 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AF77373811A75F9D02211D89 /* Pods-LinkMap.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -277,6 +368,7 @@
 		};
 		6E7368061CB7843200722B99 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 17881D6EB8FFCD1817379497 /* Pods-LinkMap.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;

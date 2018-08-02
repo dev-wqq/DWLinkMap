@@ -20,6 +20,8 @@
 @property (nonatomic, assign, readonly) NSInteger differentSize;
 @property (nonatomic, copy  , readonly) NSString *differentSizeStr;
 
+- (NSString *)showName;
+
 @end
 
 @interface DWSymbolModel : DWBaseModel

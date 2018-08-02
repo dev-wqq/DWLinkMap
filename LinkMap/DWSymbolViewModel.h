@@ -35,6 +35,8 @@
 
 - (void)buildCompareResult;
 
+- (NSArray *)sortedWithArr:(NSArray *)arr;
+
 // framework 按照size排序
 - (NSArray<DWFrameWorkModel *> *)sortedFrameworks;
 

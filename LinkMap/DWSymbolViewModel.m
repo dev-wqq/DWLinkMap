@@ -27,6 +27,28 @@ NSInteger const kShowTopNumber = 5;
     return _moreThanSize == 0 ? 50 : _moreThanSize;
 }
 
+- (NSString *)stringWithContentsOfURL:(NSURL *)filePathURL {
+    NSString *content = [NSString stringWithContentsOfURL:filePathURL encoding:NSMacOSRomanStringEncoding error:nil];
+    return content;
+}
+
+- (BOOL)fileExistsAtPathURL:(NSURL *)url {
+    return url && [[NSFileManager defaultManager] fileExistsAtPath:url.path isDirectory:nil];
+}
+
+- (BOOL)checkContent:(NSString *)content {
+    NSRange objsFileTagRange = [content rangeOfString:@"# Object files:"];
+    if (objsFileTagRange.length == 0) {
+        return NO;
+    }
+    NSString *subObjsFileSymbolStr = [content substringFromIndex:objsFileTagRange.location + objsFileTagRange.length];
+    NSRange symbolsRange = [subObjsFileSymbolStr rangeOfString:@"# Symbols:"];
+    if ([content rangeOfString:@"# Path:"].length <= 0||objsFileTagRange.location == NSNotFound||symbolsRange.location == NSNotFound) {
+        return NO;
+    }
+    return YES;
+}
+
 - (void)symbolMapFromContent:(NSString *)content {
     NSMutableDictionary <NSString *,DWSymbolModel *>*symbolMap = [NSMutableDictionary new];
     NSMutableDictionary <NSString *,DWSymbolModel *>*fileSymbolMap = [NSMutableDictionary new];
@@ -122,7 +144,6 @@ NSInteger const kShowTopNumber = 5;
         [self combineHistoryByFile];
         [self buildCompareFileResult];
     }
-    
 }
 
 #pragma make - 按照文件 分析
@@ -176,7 +197,7 @@ NSInteger const kShowTopNumber = 5;
 
 - (void)buildCompareFileResult {
     NSArray *frameworks = [self sortedWithArr:self.fileNameSymbolMap.allValues];
-    self.result = [@"  序号\t\t当前版本\t\t历史版本\t\t版本差异\t\t文件名称\r\n\r\n" mutableCopy];
+    self.result = [@"序号\t\t当前版本\t\t历史版本\t\t版本差异\t\t文件名称\r\n\r\n" mutableCopy];
     NSUInteger totalSize = 0;
     NSUInteger hisTotalSize = 0;
     
@@ -200,7 +221,7 @@ NSInteger const kShowTopNumber = 5;
 }
 
 - (void)appendResultWithSumbolModel:(DWSymbolModel *)model index:(NSInteger)index {
-    [self.result appendFormat:@"No.%5ld\t\t%@\t\t%@\t\t%@\t\t%@\r\n",index,model.sizeStr, model.historySizeStr, model.differentSizeStr, model.displayFileName];
+    [self.result appendFormat:@"%ld\t\t%@\t\t%@\t\t%@\t\t%@\r\n",index,model.sizeStr, model.historySizeStr, model.differentSizeStr, model.displayFileName];
 }
 
 #pragma make - 按照framework 分组

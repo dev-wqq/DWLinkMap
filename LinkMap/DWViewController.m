@@ -8,8 +8,10 @@
 
 #import "DWViewController.h"
 #import "DWBaseModel.h"
-#import "DWSymbolViewModel.h"
 #import "DWCalculateHelper.h"
+#import "DWSymbolViewModel.h"
+#import "DWSymbolViewModel+SingleLinkMap.h"
+#import "DWSymbolViewModel+ExportExecl.h"
 
 typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     DWAnalyzeTypeNone   = 0,
@@ -58,6 +60,8 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
 
 @property (strong) NSMutableString *result;//分析的结果
 
+@property (nonatomic, strong) NSDateFormatter *dateFormatter;
+
 @end
 
 @implementation DWViewController
@@ -67,7 +71,6 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     self.indicator.hidden = YES;
     
     _contentTextView.editable = NO;
-    [[_contentTextView textStorage] setFont:[NSFont fontWithName:@"Monospaced" size:12]];
     _contentTextView.string = @"使用方式：\n\
     1.在XCode中开启编译选项Write Link Map File \n\
     XCode -> Project -> Build Settings -> 把Write Link Map File选项设为yes，并指定好linkMap的存储位置 \n\
@@ -81,6 +84,7 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     
     self.historyViewModel = [[DWSymbolViewModel alloc] init];
     self.viewModel = [[DWSymbolViewModel alloc] init];
+    self.viewModel.historyViewModel = self.historyViewModel;
 }
 
 - (IBAction)cancaelCurrentLinkMap:(id)sender {
@@ -185,6 +189,10 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     if (type == DWAnalyzeTypeCompare || type == DWAnalyzeTypeCompareWithWhiteList) {
         [self analyzeCompareVersion:type == DWAnalyzeTypeCompareWithWhiteList];
     } else if (type == DWAnalyzeTypeSingle || type == DWAnalyzeTypeSingleWithWhiteList) {
+        if (self.historyViewModel.linkMapFileURL) {
+            self.viewModel.linkMapFileURL = self.historyViewModel.linkMapFileURL;
+            self.historyViewModel.linkMapFileURL = nil;
+        }
         [self analyzeSingleVersion:type == DWAnalyzeTypeSingleWithWhiteList];
     } else {
         [self showAlertWithText:@"请选择正确的 LinkMap 文件路径！！！"];
@@ -194,7 +202,24 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
 #pragma mark - Analyze Single Link Map
 
 - (void)analyzeSingleVersion:(BOOL)isWhitelist {
-    
+    [self startAnimation];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSString *currentContent = [self stringWithContentsOfURL:self.viewModel.linkMapFileURL];
+        if (![self checkContent:currentContent]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self stopAnimation];
+                [self showAlertWithText:@"LinkMap 文件格式有误"];
+            });
+            return ;
+        }
+        self.viewModel.linkMapContent = currentContent;
+        [self.viewModel buildSingleResult];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.contentTextView.string = self.viewModel.result;
+            [self stopAnimation];
+        });
+    });
 }
 
 #pragma mark - Analyze Both Link Map
@@ -221,7 +246,6 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
         }
         self.historyViewModel.linkMapContent = historyContent;
         self.viewModel.linkMapContent = currentContent;
-        self.viewModel.historyViewModel = self.historyViewModel;
         [self.viewModel buildCompareResult];
     
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -231,108 +255,23 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     });
 }
 
-- (NSMutableDictionary *)symbolMapFromContent:(NSString *)content {
-    NSMutableDictionary <NSString *,DWSymbolModel *>*symbolMap = [NSMutableDictionary new];
-    NSMutableDictionary <NSString *,DWSymbolModel *>*fileSymbolMap = [NSMutableDictionary new];
-    // 符号文件列表
-    NSArray *lines = [content componentsSeparatedByString:@"\n"];
-    
-    BOOL reachFiles = NO;
-    BOOL reachSymbols = NO;
-    BOOL reachSections = NO;
-    
-    for(NSString *line in lines) {
-        if([line hasPrefix:@"#"]) {
-            if([line hasPrefix:@"# Object files:"])
-                reachFiles = YES;
-            else if ([line hasPrefix:@"# Sections:"])
-                reachSections = YES;
-            else if ([line hasPrefix:@"# Symbols:"])
-                reachSymbols = YES;
-        } else {
-            if(reachFiles == YES && reachSections == NO && reachSymbols == NO) {
-                NSRange range = [line rangeOfString:@"]"];
-                if(range.location != NSNotFound) {
-                    DWSymbolModel *symbol = [DWSymbolModel new];
-                    symbol.file = [line substringFromIndex:range.location+1];
-                    NSString *key = [line substringToIndex:range.location+1];
-                    symbolMap[key] = symbol;
-                    fileSymbolMap[symbol.fileName] = symbol;
-                }
-            } else if (reachFiles == YES && reachSections == YES && reachSymbols == YES) {
-                NSArray <NSString *>*symbolsArray = [line componentsSeparatedByString:@"\t"];
-                if(symbolsArray.count == 3) {
-                    NSString *fileKeyAndName = symbolsArray[2];
-                    NSUInteger size = strtoul([symbolsArray[1] UTF8String], nil, 16);
-                    
-                    NSRange range = [fileKeyAndName rangeOfString:@"]"];
-                    if(range.location != NSNotFound) {
-                        NSString *key = [fileKeyAndName substringToIndex:range.location+1];
-                        DWSymbolModel *symbol = symbolMap[key];
-                        if(symbol) {
-                            symbol.size += size;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return fileSymbolMap;
-}
-
-- (void)buildCompareResultWithSymbols:(NSArray<DWFrameWorkModel *> *)symbols {
-    self.result = [@"当前版本\t\t历史版本\t\t版本差异\t\t模块名称\r\n\r\n" mutableCopy];
-    NSUInteger totalSize = 0;
-    NSUInteger hisTotalSize = 0;
-    
-    NSString *searchKey = _searchField.stringValue;
-    for(DWFrameWorkModel *symbol in symbols) {
-        if (searchKey.length > 0) {
-            if ([symbol.frameworkName containsString:searchKey]) {
-                [self appendResultWithSetSymbol:symbol];
-                totalSize += symbol.size;
-                hisTotalSize += symbol.historySize;
-            }
-        } else {
-            [self appendResultWithSetSymbol:symbol];
-            totalSize += symbol.size;
-            hisTotalSize += symbol.historySize;
-        }
-    }
-    
-    [_result appendFormat:@"\r\n当前版本总大小: %@\n历史版本总大小: %@\r\n",[DWCalculateHelper calculateSize:totalSize],[DWCalculateHelper calculateSize:hisTotalSize]];
-}
-
 - (IBAction)ouputFile:(id)sender {
-    NSOpenPanel* panel = [NSOpenPanel openPanel];
-    [panel setAllowsMultipleSelection:NO];
-    [panel setCanChooseDirectories:YES];
-    [panel setResolvesAliases:NO];
-    [panel setCanChooseFiles:NO];
-    
-    [panel beginWithCompletionHandler:^(NSInteger result) {
-        if (result == NSFileHandlingPanelOKButton) {
-            NSURL*  theDoc = [[panel URLs] objectAtIndex:0];
-            NSMutableString *content =[[NSMutableString alloc]initWithCapacity:0];
-            [content appendString:[theDoc path]];
-            [content appendString:@"/linkMap.txt"];
-            [self.viewModel.result writeToFile:content atomically:YES encoding:NSUTF8StringEncoding error:nil];
-        }
-    }];
-}
-
-- (void)appendResultWithSetSymbol:(DWFrameWorkModel *)model {
-    [_result appendFormat:@"%@\t\t%@\t\t%@\t\t%@\r\n",model.sizeStr, model.historySizeStr, model.differentSizeStr, model.frameworkName];
-}
-
-- (void)appendResultWithSymbol:(DWSymbolModel *)model {
-    NSString *size = nil;
-    if (model.size / 1000.0 / 1000.0 > 1) {
-        size = [NSString stringWithFormat:@"%.2fM", model.size / 1000.0 / 1000.0];
-    } else {
-        size = [NSString stringWithFormat:@"%.2fK", model.size / 1000.0];
-    }
-    [_result appendFormat:@"%@\t%@\r\n",size, [[model.file componentsSeparatedByString:@"/"] lastObject]];
+//    NSOpenPanel* panel = [NSOpenPanel openPanel];
+//    [panel setAllowsMultipleSelection:NO];
+//    [panel setCanChooseDirectories:YES];
+//    [panel setResolvesAliases:NO];
+//    [panel setCanChooseFiles:NO];
+//
+//    [panel beginWithCompletionHandler:^(NSInteger result) {
+//        if (result == NSFileHandlingPanelOKButton) {
+//            NSURL*  theDoc = [[panel URLs] objectAtIndex:0];
+//            NSMutableString *content =[[NSMutableString alloc]initWithCapacity:0];
+//            [content appendString:[theDoc path]];
+    NSString *str = @"/Users/wangqiqi1/Desktop/linkMap.xlsx";
+//            [self.viewModel exportExeclWithCompare:YES fileName:str];
+    [self.viewModel exportReportDataWithFileName:str];
+//        }
+//    }];
 }
 
 #pragma make - Animation Methods
@@ -377,6 +316,14 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     [alert addButtonWithTitle:@"确定"];
     [alert beginSheetModalForWindow:[NSApplication sharedApplication].windows[0] completionHandler:^(NSModalResponse returnCode) {
     }];
+}
+
+- (NSDateFormatter *)dateFormatter {
+    if (!_dateFormatter) {
+        _dateFormatter = [[NSDateFormatter alloc] init];
+        _dateFormatter.dateFormat = @"yy-MM-dd HH:mm";
+    }
+    return _dateFormatter;
 }
 
 @end
