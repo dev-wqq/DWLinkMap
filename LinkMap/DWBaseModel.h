@@ -11,10 +11,10 @@
 @interface DWBaseModel: NSObject
 
 /// 当前版本size
-@property (nonatomic, assign)           NSUInteger size;//大小
+@property (nonatomic, assign)           NSInteger size;//大小
 @property (nonatomic, copy, readonly)   NSString  *sizeStr;
 /// 历史版本size
-@property (nonatomic, assign)           NSUInteger historySize;
+@property (nonatomic, assign)           NSInteger historySize;
 @property (nonatomic, copy, readonly)   NSString  *historySizeStr;
 /// 版本差异size size - historySize
 @property (nonatomic, assign, readonly) NSInteger differentSize;
@@ -30,6 +30,8 @@
 @property (nonatomic, copy, readonly) NSString *fileName;
 /// 库名称
 @property (nonatomic, copy, readonly) NSString *frameworkName;
+
+@property (nonatomic, copy) NSString *displayFileName;
 
 @end
 

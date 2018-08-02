@@ -73,6 +73,13 @@
     return _frameworkName;
 }
 
+- (NSString *)displayFileName {
+    if (!_displayFileName) {
+        _displayFileName = self.fileName;
+    }
+    return _displayFileName;
+}
+
 @end
 
 @implementation DWFrameWorkModel

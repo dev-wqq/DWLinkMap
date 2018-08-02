@@ -67,7 +67,7 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     self.indicator.hidden = YES;
     
     _contentTextView.editable = NO;
-    
+    [[_contentTextView textStorage] setFont:[NSFont fontWithName:@"Monospaced" size:12]];
     _contentTextView.string = @"使用方式：\n\
     1.在XCode中开启编译选项Write Link Map File \n\
     XCode -> Project -> Build Settings -> 把Write Link Map File选项设为yes，并指定好linkMap的存储位置 \n\
@@ -229,33 +229,6 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
             [self stopAnimation];
         });
     });
-}
-
-- (void)combineHistoryRecords {
-    NSMutableDictionary *temp = self.historyViewModel.frameworkSymbolMap.mutableCopy;
-    for (NSString *key in self.viewModel.frameworkSymbolMap.allKeys) {
-        DWFrameWorkModel *curSetModel = self.viewModel.frameworkSymbolMap[key];
-        DWFrameWorkModel *hisSetModel = self.historyViewModel.frameworkSymbolMap[key];
-        
-        curSetModel.historySize = hisSetModel.size;
-        curSetModel.historySubMap = hisSetModel.subMap;
-        if (!hisSetModel) {
-            curSetModel.frameworkName = [NSString stringWithFormat:@"新增 %@",curSetModel.frameworkName];
-        }
-        
-        [temp removeObjectForKey:key];
-    }
-    if (temp.allKeys.count > 0) {
-        for (NSString *key in temp.allKeys) {
-            DWFrameWorkModel *hisSetModel = temp[key];
-            DWFrameWorkModel *setModel = [[DWFrameWorkModel alloc] init];
-            setModel.subMap = hisSetModel.subMap;
-            setModel.historySubMap = hisSetModel.historySubMap;
-            setModel.historySize = hisSetModel.size;
-            setModel.frameworkName = [NSString stringWithFormat:@"已删除 %@",hisSetModel.frameworkName];
-            self.viewModel.frameworkSymbolMap[hisSetModel.frameworkName] = setModel;
-        }
-    }
 }
 
 - (NSMutableDictionary *)symbolMapFromContent:(NSString *)content {

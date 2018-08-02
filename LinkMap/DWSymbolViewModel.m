@@ -88,13 +88,21 @@ NSInteger const kShowTopNumber = 5;
         }
     }
     _symbolMap = symbolMap;
-    _fileSymbolMap = fileSymbolMap;
+    _fileNameSymbolMap = fileSymbolMap;
     _frameworkSymbolMap = frameworkSymbolMap;
 }
 
 - (NSArray<DWFrameWorkModel *> *)sortedFrameworks {
-    
     NSArray *sortedSymbols = [self.frameworkSymbolMap.allValues sortedArrayUsingComparator:^NSComparisonResult(DWFrameWorkModel *  _Nonnull obj1, DWFrameWorkModel *  _Nonnull obj2) {
+        if (self.sortedDiffSize) {
+            if(obj1.differentSize > obj2.differentSize) {
+                return NSOrderedAscending;
+            } else if (obj1.differentSize < obj2.differentSize) {
+                return NSOrderedDescending;
+            } else {
+                return NSOrderedSame;
+            }
+        }
         if(obj1.size > obj2.size) {
             return NSOrderedAscending;
         } else if (obj1.size < obj2.size) {
@@ -112,13 +120,87 @@ NSInteger const kShowTopNumber = 5;
         [self buildCompareFrameworkResult];
     } else {
         [self combineHistoryByFile];
+        [self buildCompareFileResult];
     }
     
 }
 
+#pragma make - 按照文件 分析
 
 - (void)combineHistoryByFile {
+    NSMutableDictionary *temp = self.historyViewModel.fileNameSymbolMap.mutableCopy;
+    for (NSString *fileName in self.fileNameSymbolMap.allKeys) {
+        DWSymbolModel *curModel = self.fileNameSymbolMap[fileName];
+        DWSymbolModel *hisModel = self.historyViewModel.fileNameSymbolMap[fileName];
+        
+        curModel.historySize = hisModel.size;
+        if (!hisModel) {
+            curModel.displayFileName = [NSString stringWithFormat:@"新增 %@",curModel.fileName];
+        }
+        [temp removeObjectForKey:fileName];
+    }
+    if (temp.allKeys.count > 0) {
+        for (NSString *key in temp.allKeys) {
+            DWSymbolModel *hisModel = temp[key];
+            DWSymbolModel *model = [[DWSymbolModel alloc] init];
+            model.file = hisModel.file;
+            model.historySize = hisModel.size;
+            model.displayFileName = [NSString stringWithFormat:@"已删除 %@",hisModel.fileName];
+            self.fileNameSymbolMap[hisModel.fileName] = model;
+        }
+    }
+}
+
+- (NSArray *)sortedWithArr:(NSArray *)arr {
+    NSArray *sortedSymbols = [arr sortedArrayUsingComparator:^NSComparisonResult(DWBaseModel *obj1, DWBaseModel *obj2) {
+        if (self.sortedDiffSize) {
+            if(obj1.differentSize > obj2.differentSize) {
+                return NSOrderedAscending;
+            } else if (obj1.differentSize < obj2.differentSize) {
+                return NSOrderedDescending;
+            } else {
+                return NSOrderedSame;
+            }
+        } else {
+            if(obj1.size > obj2.size) {
+                return NSOrderedAscending;
+            } else if (obj1.size < obj2.size) {
+                return NSOrderedDescending;
+            } else {
+                return NSOrderedSame;
+            }
+        }
+    }];
+    return sortedSymbols;
+}
+
+- (void)buildCompareFileResult {
+    NSArray *frameworks = [self sortedWithArr:self.fileNameSymbolMap.allValues];
+    self.result = [@"  序号\t\t当前版本\t\t历史版本\t\t版本差异\t\t文件名称\r\n\r\n" mutableCopy];
+    NSUInteger totalSize = 0;
+    NSUInteger hisTotalSize = 0;
     
+    NSString *searchKey = _searchkey;
+    for (int index = 0; index < frameworks.count; index++) {
+        DWSymbolModel *symbol = frameworks[index];
+        if (searchKey.length > 0) {
+            if ([symbol.fileName containsString:searchKey]) {
+                [self appendResultWithSumbolModel:symbol index:index+1];
+                totalSize += symbol.size;
+                hisTotalSize += symbol.historySize;
+            }
+        } else {
+            [self appendResultWithSumbolModel:symbol index:index+1];
+            totalSize += symbol.size;
+            hisTotalSize += symbol.historySize;
+        }
+    }
+    NSString *diffSizeStr = [DWCalculateHelper calculateDiffSize:totalSize-hisTotalSize];
+    [self.result appendFormat:@"\r\n当前版本总大小: %@\n历史版本总大小: %@  版本差异：%@\r\n",[DWCalculateHelper calculateSize:totalSize],[DWCalculateHelper calculateSize:hisTotalSize], diffSizeStr];
+}
+
+- (void)appendResultWithSumbolModel:(DWSymbolModel *)model index:(NSInteger)index {
+    [self.result appendFormat:@"No.%5ld\t\t%@\t\t%@\t\t%@\t\t%@\r\n",index,model.sizeStr, model.historySizeStr, model.differentSizeStr, model.displayFileName];
 }
 
 #pragma make - 按照framework 分组
@@ -173,7 +255,7 @@ NSInteger const kShowTopNumber = 5;
 }
 
 - (void)buildCompareFrameworkResult {
-    NSArray<DWFrameWorkModel *> *frameworks = [self sortedFrameworks];
+    NSArray<DWFrameWorkModel *> *frameworks = [self sortedWithArr:self.frameworkSymbolMap.allValues];
     self.result = [@"序号\t\t当前版本\t\t历史版本\t\t版本差异\t\t模块名称\r\n\r\n" mutableCopy];
     NSUInteger totalSize = 0;
     NSUInteger hisTotalSize = 0;
@@ -183,26 +265,27 @@ NSInteger const kShowTopNumber = 5;
         DWFrameWorkModel *symbol = frameworks[index];
         if (searchKey.length > 0) {
             if ([symbol.frameworkName containsString:searchKey]) {
-                [self appendResultWithSetSymbol:symbol index:index+1];
+                [self appendResultWithFrameworkModel:symbol index:index+1];
                 totalSize += symbol.size;
                 hisTotalSize += symbol.historySize;
             }
         } else {
-            [self appendResultWithSetSymbol:symbol index:index+1];
+            [self appendResultWithFrameworkModel:symbol index:index+1];
             totalSize += symbol.size;
             hisTotalSize += symbol.historySize;
         }
     }
-    [_result appendFormat:@"\r\n当前版本总大小: %@\n历史版本总大小: %@\r\n",[DWCalculateHelper calculateSize:totalSize],[DWCalculateHelper calculateSize:hisTotalSize]];
+    NSString *diffSizeStr = [DWCalculateHelper calculateDiffSize:totalSize-hisTotalSize];
+    [self.result appendFormat:@"\r\n当前版本总大小: %@\n历史版本总大小: %@  版本差异：%@\r\n",[DWCalculateHelper calculateSize:totalSize],[DWCalculateHelper calculateSize:hisTotalSize], diffSizeStr];
 }
 
-- (void)appendResultWithSetSymbol:(DWFrameWorkModel *)model index:(NSInteger)index {
-    [_result appendFormat:@"%ld\t\t%@\t\t%@\t\t%@\t\t%@\r\n",index,model.sizeStr, model.historySizeStr, model.differentSizeStr, model.frameworkName];
+- (void)appendResultWithFrameworkModel:(DWFrameWorkModel *)model index:(NSInteger)index {
+    [self.result appendFormat:@"%ld\t\t%@\t\t%@\t\t%@\t\t%@\r\n",index,model.sizeStr, model.historySizeStr, model.differentSizeStr, model.frameworkName];
     if (model.displayArr.count > 0) {
         for (DWSymbolModel *fileModel in model.displayArr) {
-            [_result appendFormat:@"  \t\t%@\t\t%@\t\t%@\t\t%@\r\n",fileModel.sizeStr, fileModel.historySizeStr, fileModel.differentSizeStr, fileModel.fileName];
+            [self.result appendFormat:@"  \t\t%@\t\t%@\t\t%@\t\t%@\r\n",fileModel.sizeStr, fileModel.historySizeStr, fileModel.differentSizeStr, fileModel.fileName];
         }
-        [_result appendFormat:@"\r\n"];
+        [self.result appendFormat:@"\r\n"];
     }
 }
 
