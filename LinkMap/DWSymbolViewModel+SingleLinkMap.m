@@ -7,8 +7,6 @@
 //
 
 #import "DWSymbolViewModel+SingleLinkMap.h"
-#import "DWBaseModel.h"
-#import "DWCalculateHelper.h"
 
 @implementation DWSymbolViewModel (SingleLinkMap)
 
@@ -23,31 +21,34 @@
     } else {
         frameworks = [self sortedWithArr:self.fileNameSymbolMap.allValues];
     }
-    self.result = [@"序号\t\t文件大小\t\t文件名称\r\n\r\n" mutableCopy];
+    self.result = [@"序号\t文件大小\t文件名称\r\n\r\n" mutableCopy];
     NSUInteger totalSize = 0;
-    NSString *searchKey = self.searchkey;
+    NSMutableArray *mArr = [NSMutableArray array];
     for (int index = 0; index < frameworks.count; index++) {
         DWBaseModel *symbol = frameworks[index];
-        if (searchKey.length > 0) {
-            if ([symbol.showName containsString:searchKey]) {
+        if ([self displayCondition]) {
+            if ([self containsString:symbol.key]) {
                 [self appendResultWithFileModel:symbol index:index+1];
                 totalSize += symbol.size;
+                [mArr addObject:symbol];
             }
         } else {
             [self appendResultWithFileModel:symbol index:index+1];
             totalSize += symbol.size;
+            [mArr addObject:symbol];
         }
     }
+    self.resultArray = mArr.copy;
     [self.result appendFormat:@"\r\n总大小: %@",[DWCalculateHelper calculateSize:totalSize]];
 }
 
 - (void)appendResultWithFileModel:(DWBaseModel *)model index:(NSInteger)index {
-    [self.result appendFormat:@"%ld\t\t%@\t\t%@\r\n",index,model.sizeStr, model.showName];
+    [self.result appendFormat:@"%ld\t%@\t%@\r\n",index,model.sizeStr, model.showName];
     if ([model isKindOfClass:[DWFrameWorkModel class]]) {
         DWFrameWorkModel *framework = (DWFrameWorkModel *)model;
         if (framework.displayArr.count > 0) {
             for (DWSymbolModel *fileModel in framework.displayArr) {
-                [self.result appendFormat:@"  \t\t%@\t\t%@\r\n",fileModel.sizeStr, fileModel.showName];
+                [self.result appendFormat:@"  \t%@\t%@\r\n",fileModel.sizeStr, fileModel.showName];
             }
             [self.result appendFormat:@"\r\n"];
         }

@@ -20,7 +20,8 @@
 @property (nonatomic, assign, readonly) NSInteger differentSize;
 @property (nonatomic, copy  , readonly) NSString *differentSizeStr;
 
-- (NSString *)showName;
+@property (nonatomic, copy) NSString *showName;
+@property (nonatomic, copy, readonly) NSString *key;
 
 @end
 
@@ -32,8 +33,6 @@
 @property (nonatomic, copy, readonly) NSString *fileName;
 /// 库名称
 @property (nonatomic, copy, readonly) NSString *frameworkName;
-
-@property (nonatomic, copy) NSString *displayFileName;
 
 @end
 

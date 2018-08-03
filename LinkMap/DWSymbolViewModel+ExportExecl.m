@@ -7,8 +7,6 @@
 //
 
 #import "DWSymbolViewModel+ExportExecl.h"
-#import "DWCalculateHelper.h"
-#import "DWBaseModel.h"
 #import <xlsxwriter/xlsxwriter.h>
 
 static lxw_format *_knameFormat;// 各表格标题栏的格式
@@ -18,40 +16,79 @@ static NSString * const kHistoryVersion = @"v7.0.12";
 
 @implementation DWSymbolViewModel (ExportExecl)
 
-- (void)exportCompareVersionExecl {
-    
+- (void)exportCompareVersionExecl:(NSString *)fileName {
+    if (self.resultArray.count == 0) {
+        return;
+    }
+    lxw_workbook *workbook = workbook_new(fileName.UTF8String);
+    lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
+    NSString *moduleName = self.frameworkAnalyze ? @"模块名称" : @"文件名称";
+    NSArray *titles = @[@"序号", kCurrentVersion, kHistoryVersion,@"版本差异", moduleName];
+    [self addCompareTitleForWorksheet:worksheet titles:titles];
+    [self addEportDataAddSubFile:worksheet dataSource:self.resultArray];
+    workbook_close(workbook);
 }
 
-- (void)exportSingleExecl {
-    
-    
+- (void)exportSingleExecl:(NSString *)fileName {
+    if (self.resultArray.count == 0) {
+        return;
+    }
+    lxw_workbook *workbook = workbook_new(fileName.UTF8String);
+    lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
+    NSString *moduleName = self.frameworkAnalyze ? @"模块名称" : @"文件名称";
+    NSArray *titles = @[@"序号", kCurrentVersion, moduleName];
+    [self addCompareTitleForWorksheet:worksheet titles:titles];
+    [self addCompareContentForWorksheet:worksheet dataSource:self.resultArray];
+    workbook_close(workbook);
+}
+
+- (NSArray *)makeModuleWhitelistData:(NSArray *)dataSource {
+    if (!self.whitelistURL || self.whitelistSet.count == 0) {
+        return nil;
+    }
+    NSMutableArray *mArr = [NSMutableArray array];
+    for (DWFrameWorkModel *model in dataSource) {
+        if ([self.whitelistSet containsObject:model.frameworkName]) {
+            [mArr addObject:model];
+        }
+    }
+    return mArr;
 }
 
 - (void)exportReportDataWithFileName:(NSString *)fileName {
     lxw_workbook *workbook = workbook_new(fileName.UTF8String);
     // 所有模块，通过模块大小降序排序
-    NSArray *frameworks = [self sortedWithArr:self.frameworkSymbolMap.allValues];
+    NSArray *dataSource = self.frameworkSymbolMap.allValues;
+    NSArray *frameworks = [self sortedWithArr:dataSource];
     [self makeReportSheetWithWorkbook:workbook
                             sheetName:self.c_allSSSheet
                            dataSource:frameworks];
     
     // 所有模块，通过版本对比大小降序排序
-    frameworks = [self sortedWithArr:self.frameworkSymbolMap.allValues];
+    frameworks = [self sortedWithArr:self.frameworkSymbolMap.allValues style:DWSortedDiffSize];
     [self makeReportSheetWithWorkbook:workbook
                             sheetName:self.c_allSDSSheet
                            dataSource:frameworks];
     
-    // 所有名单内，通过版本对比大小降序排序
-    frameworks = [self sortedWithArr:self.frameworkSymbolMap.allValues];
-    [self makeReportSheetWithWorkbook:workbook
-                            sheetName:self.c_whitelistSSSheet
-                           dataSource:frameworks];
     
-    // 所有名单内，通过版本对比大小降序排序
-    frameworks = [self sortedWithArr:self.frameworkSymbolMap.allValues];
-    [self makeReportSheetWithWorkbook:workbook
-                            sheetName:self.c_whitelistSSDSheet
-                           dataSource:frameworks];
+    NSArray *whitelist = [self makeModuleWhitelistData:self.frameworkSymbolMap.allValues];
+    
+    if (whitelist.count > 0) {
+        // 所有名单内，通过版本对比大小降序排序
+        NSArray *sortedArr = [self sortedWithArr:whitelist];
+        [self makeReportSheetWithWorkbook:workbook
+                                sheetName:self.c_whitelistSSSheet
+                               dataSource:sortedArr];
+        
+        // 所有名单内，通过版本对比大小降序排序
+        NSArray *sortedDifffArr = [self sortedWithArr:whitelist style:DWSortedDiffSize];
+        [self makeReportSheetWithWorkbook:workbook
+                                sheetName:self.c_whitelistSSDSheet
+                               dataSource:sortedDifffArr];
+        
+        char const *sheetName = [self c_charFromString:@"sh_group_add"];
+        [self makeGroupAddSheetWithWorkbook:workbook sheetName:sheetName dataSource:sortedArr];
+    }
     workbook_close(workbook);
 }
 
@@ -59,8 +96,16 @@ static NSString * const kHistoryVersion = @"v7.0.12";
                     sheetName:(const char*)sheetName
                    dataSource:(NSArray *)dataSource {
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, sheetName);
-    [self addCompareTitleForWorksheet:worksheet titles:self.dw_titleNames];
+    [self addCompareTitleForWorksheet:worksheet titles:[self dw_compareTitles]];
     [self addCompareContentForWorksheet:worksheet dataSource:dataSource];
+}
+
+- (void)makeGroupAddSheetWithWorkbook:(lxw_workbook *)workbook
+                          sheetName:(const char*)sheetName
+                         dataSource:(NSArray *)dataSource  {
+    lxw_worksheet *worksheet = workbook_add_worksheet(workbook, sheetName);
+    [self addCompareTitleForWorksheet:worksheet titles:[self dw_compareTitles]];
+    [self addEportCustomDataAddSubFile:worksheet dataSource:dataSource];
 }
 
 /// add sheet titles
@@ -76,25 +121,85 @@ static NSString * const kHistoryVersion = @"v7.0.12";
 #pragma mark - Compare Version Methods
 
 /// 添加内容数据
+- (void)addEportDataAddSubFile:(lxw_worksheet *)worksheet
+                    dataSource:(NSArray *)dataSource {
+    NSUInteger totalSize = 0;
+    NSUInteger hisTotalSize = 0;
+    int totalNumber = 0;
+    for (int index = 0; index < dataSource.count; index++) {
+        DWBaseModel *model = dataSource[index];
+        totalNumber = totalNumber + 2;
+        [self addCompareRowForWorkSheet:worksheet model:model indexName:@(index+1).stringValue index:totalNumber];
+        if ([model isKindOfClass:[DWFrameWorkModel class]] &&
+            ((DWFrameWorkModel *)model).displayArr.count > 0) {
+            DWFrameWorkModel *frameworkModel = (DWFrameWorkModel *)model;
+            int indexSorted = 0;
+            for (int j = 0; j < frameworkModel.displayArr.count; j++) {
+                DWBaseModel *subModel = frameworkModel.displayArr[j];
+                if (subModel.differentSize != 0) {
+                    totalNumber++;
+                    indexSorted++;
+                    NSString *indexName = [NSString stringWithFormat:@"%d_%d",index+1,indexSorted];
+                    [self addCompareRowForWorkSheet:worksheet model:subModel indexName:indexName index:totalNumber];
+                }
+            }
+        }
+        totalSize += model.size;
+        hisTotalSize += model.historySize;
+    }
+    NSInteger lastIndex = totalNumber+2;
+    [self addCompareTotalForWorkSheet:worksheet
+                            totalSize:totalSize
+                         hisTotalSize:hisTotalSize
+                            lastIndex:(int)lastIndex];
+}
+
+/// 添加内容数据
+- (void)addEportCustomDataAddSubFile:(lxw_worksheet *)worksheet
+                    dataSource:(NSArray *)dataSource {
+    NSUInteger totalSize = 0;
+    NSUInteger hisTotalSize = 0;
+    int totalNumber = 0;
+    for (int index = 0; index < dataSource.count; index++) {
+        DWBaseModel *model = dataSource[index];
+        totalNumber = totalNumber + 2;
+        [self addCompareRowForWorkSheet:worksheet model:model indexName:@(index+1).stringValue index:totalNumber];
+        if ([model isKindOfClass:[DWFrameWorkModel class]]) {
+            DWFrameWorkModel *frameworkModel = (DWFrameWorkModel *)model;
+            NSArray *sortedArr = [self sortedWithArr:frameworkModel.subMap.allValues];
+            int indexSorted = 0;
+            for (int j = 0; j < sortedArr.count; j++) {
+                DWBaseModel *subModel = sortedArr[j];
+                if (subModel.differentSize != 0) {
+                    totalNumber++;
+                    indexSorted++;
+                    NSString *indexName = [NSString stringWithFormat:@"%d_%d",index+1,indexSorted];
+                    [self addCompareRowForWorkSheet:worksheet model:subModel indexName:indexName index:totalNumber];
+                }
+            }
+        }
+        totalSize += model.size;
+        hisTotalSize += model.historySize;
+    }
+    NSInteger lastIndex = totalNumber+2;
+    [self addCompareTotalForWorkSheet:worksheet
+                            totalSize:totalSize
+                         hisTotalSize:hisTotalSize
+                            lastIndex:(int)lastIndex];
+}
+
+/// 添加内容数据
 - (void)addCompareContentForWorksheet:(lxw_worksheet *)worksheet
                            dataSource:(NSArray *)dataSource  {
     NSUInteger totalSize = 0;
     NSUInteger hisTotalSize = 0;
     
-    NSString *searchKey = self.searchkey;
     for (int index = 0; index < dataSource.count; index++) {
         DWBaseModel *model = dataSource[index];
-        if (searchKey.length > 0) {
-            if ([model.showName containsString:searchKey]) {
-                [self addCompareRowForWorkSheet:worksheet model:model index:index];
-                totalSize += model.size;
-                hisTotalSize += model.historySize;
-            }
-        } else {
-            [self addCompareRowForWorkSheet:worksheet model:model index:index];
-            totalSize += model.size;
-            hisTotalSize += model.historySize;
-        }
+        
+        [self addCompareRowForWorkSheet:worksheet model:model index:index+1];
+        totalSize += model.size;
+        hisTotalSize += model.historySize;
     }
     NSInteger lastIndex = dataSource.count + 1;
     [self addCompareTotalForWorkSheet:worksheet
@@ -103,13 +208,19 @@ static NSString * const kHistoryVersion = @"v7.0.12";
                             lastIndex:(int)lastIndex];
 }
 
-/// 添加每一条数据
 - (void)addCompareRowForWorkSheet:(lxw_worksheet *)worksheet
                             model:(DWBaseModel *)model
                             index:(int)index {
-    index = index+1;
+    return [self addCompareRowForWorkSheet:worksheet model:model indexName:@(index).stringValue index:index];
+}
+
+/// 添加每一条数据
+- (void)addCompareRowForWorkSheet:(lxw_worksheet *)worksheet
+                            model:(DWBaseModel *)model
+                        indexName:(NSString *)indexName
+                            index:(int)index {
     int row = 0;
-    char const *c_number = [@(index).stringValue cStringUsingEncoding:NSUTF8StringEncoding];
+    char const *c_number = [indexName cStringUsingEncoding:NSUTF8StringEncoding];
     worksheet_write_string(worksheet, index, row, c_number, _knameFormat);
     row++;
     
@@ -161,8 +272,12 @@ static NSString * const kHistoryVersion = @"v7.0.12";
 #pragma make - Helper Methods
 
 
-- (NSArray *)dw_titleNames {
+- (NSArray *)dw_compareTitles {
     return @[@"序号", kCurrentVersion, kHistoryVersion,@"版本差异",@"模块名称"];
+}
+
+- (NSArray *)dw_singleTitles {
+    return @[@"序号",kCurrentVersion, @"模块名称"];
 }
 
 - (const char *)c_charFromString:(NSString *)str {

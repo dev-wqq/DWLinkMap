@@ -13,5 +13,9 @@
 /// 导出每个版本报表数据
 - (void)exportReportDataWithFileName:(NSString *)fileName;
 
+- (void)exportCompareVersionExecl:(NSString *)fileName;
+
+- (void)exportSingleExecl:(NSString *)fileName;
+
 
 @end

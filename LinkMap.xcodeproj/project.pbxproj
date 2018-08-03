@@ -18,6 +18,7 @@
 		6F0BFC11211090F000CA4F7C /* DWCalculateHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F0BFC10211090F000CA4F7C /* DWCalculateHelper.m */; };
 		6FFAE2EE2112C6B400C40A9E /* DWSymbolViewModel+SingleLinkMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FFAE2ED2112C6B400C40A9E /* DWSymbolViewModel+SingleLinkMap.m */; };
 		6FFAE2F12112E15200C40A9E /* DWSymbolViewModel+ExportExecl.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FFAE2F02112E15200C40A9E /* DWSymbolViewModel+ExportExecl.m */; };
+		6FFAE2F421135C0F00C40A9E /* DWSymbolViewModel+CompareLinkMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FFAE2F321135C0F00C40A9E /* DWSymbolViewModel+CompareLinkMap.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +43,8 @@
 		6FFAE2ED2112C6B400C40A9E /* DWSymbolViewModel+SingleLinkMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "DWSymbolViewModel+SingleLinkMap.m"; sourceTree = "<group>"; };
 		6FFAE2EF2112E15200C40A9E /* DWSymbolViewModel+ExportExecl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DWSymbolViewModel+ExportExecl.h"; sourceTree = "<group>"; };
 		6FFAE2F02112E15200C40A9E /* DWSymbolViewModel+ExportExecl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "DWSymbolViewModel+ExportExecl.m"; sourceTree = "<group>"; };
+		6FFAE2F221135C0F00C40A9E /* DWSymbolViewModel+CompareLinkMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DWSymbolViewModel+CompareLinkMap.h"; sourceTree = "<group>"; };
+		6FFAE2F321135C0F00C40A9E /* DWSymbolViewModel+CompareLinkMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "DWSymbolViewModel+CompareLinkMap.m"; sourceTree = "<group>"; };
 		AF77373811A75F9D02211D89 /* Pods-LinkMap.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LinkMap.debug.xcconfig"; path = "Pods/Target Support Files/Pods-LinkMap/Pods-LinkMap.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -89,18 +92,10 @@
 			children = (
 				6E7367E81CB7843200722B99 /* AppDelegate.h */,
 				6E7367E91CB7843200722B99 /* AppDelegate.m */,
-				6E7367EE1CB7843200722B99 /* DWViewController.h */,
-				6E7367EF1CB7843200722B99 /* DWViewController.m */,
-				6E73680A1CB784F100722B99 /* DWBaseModel.h */,
-				6E73680B1CB784F100722B99 /* DWBaseModel.m */,
-				6F0BFC0F211090F000CA4F7C /* DWCalculateHelper.h */,
-				6F0BFC10211090F000CA4F7C /* DWCalculateHelper.m */,
-				6F0BFC0C21105A9200CA4F7C /* DWSymbolViewModel.h */,
-				6F0BFC0D21105A9200CA4F7C /* DWSymbolViewModel.m */,
-				6FFAE2EC2112C6B400C40A9E /* DWSymbolViewModel+SingleLinkMap.h */,
-				6FFAE2ED2112C6B400C40A9E /* DWSymbolViewModel+SingleLinkMap.m */,
-				6FFAE2EF2112E15200C40A9E /* DWSymbolViewModel+ExportExecl.h */,
-				6FFAE2F02112E15200C40A9E /* DWSymbolViewModel+ExportExecl.m */,
+				6FFAE2F821135C5700C40A9E /* ViewController */,
+				6FFAE2F721135C4500C40A9E /* Model */,
+				6FFAE2F621135C2E00C40A9E /* Helper */,
+				6FFAE2F521135C1900C40A9E /* ViewModel */,
 				6E7367F11CB7843200722B99 /* Assets.xcassets */,
 				6E7367F31CB7843200722B99 /* Main.storyboard */,
 				6E7367F61CB7843200722B99 /* Info.plist */,
@@ -115,6 +110,48 @@
 				6E7367EC1CB7843200722B99 /* main.m */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		6FFAE2F521135C1900C40A9E /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				6F0BFC0C21105A9200CA4F7C /* DWSymbolViewModel.h */,
+				6F0BFC0D21105A9200CA4F7C /* DWSymbolViewModel.m */,
+				6FFAE2F221135C0F00C40A9E /* DWSymbolViewModel+CompareLinkMap.h */,
+				6FFAE2F321135C0F00C40A9E /* DWSymbolViewModel+CompareLinkMap.m */,
+				6FFAE2EC2112C6B400C40A9E /* DWSymbolViewModel+SingleLinkMap.h */,
+				6FFAE2ED2112C6B400C40A9E /* DWSymbolViewModel+SingleLinkMap.m */,
+				6FFAE2EF2112E15200C40A9E /* DWSymbolViewModel+ExportExecl.h */,
+				6FFAE2F02112E15200C40A9E /* DWSymbolViewModel+ExportExecl.m */,
+			);
+			name = ViewModel;
+			sourceTree = "<group>";
+		};
+		6FFAE2F621135C2E00C40A9E /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				6F0BFC0F211090F000CA4F7C /* DWCalculateHelper.h */,
+				6F0BFC10211090F000CA4F7C /* DWCalculateHelper.m */,
+			);
+			name = Helper;
+			sourceTree = "<group>";
+		};
+		6FFAE2F721135C4500C40A9E /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				6E73680A1CB784F100722B99 /* DWBaseModel.h */,
+				6E73680B1CB784F100722B99 /* DWBaseModel.m */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		6FFAE2F821135C5700C40A9E /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				6E7367EE1CB7843200722B99 /* DWViewController.h */,
+				6E7367EF1CB7843200722B99 /* DWViewController.m */,
+			);
+			name = ViewController;
 			sourceTree = "<group>";
 		};
 		C604C79CF2821EC219EB7CAF /* Frameworks */ = {
@@ -256,6 +293,7 @@
 				6FFAE2F12112E15200C40A9E /* DWSymbolViewModel+ExportExecl.m in Sources */,
 				6F0BFC11211090F000CA4F7C /* DWCalculateHelper.m in Sources */,
 				6FFAE2EE2112C6B400C40A9E /* DWSymbolViewModel+SingleLinkMap.m in Sources */,
+				6FFAE2F421135C0F00C40A9E /* DWSymbolViewModel+CompareLinkMap.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

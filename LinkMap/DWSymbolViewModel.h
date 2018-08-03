@@ -7,17 +7,25 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "DWCalculateHelper.h"
+#import "DWBaseModel.h"
 
-@class DWSymbolModel;
-@class DWFrameWorkModel;
+typedef NS_ENUM(NSInteger, DWSortedStyle) {
+    DWSortedSize = 0,
+    DWSortedHistorySize,
+    DWSortedDiffSize,
+};
+
 @interface DWSymbolViewModel : NSObject
 
-@property (nonatomic, strong) NSMutableDictionary<NSString *,DWSymbolModel *>    *symbolMap;
-@property (nonatomic, strong) NSMutableDictionary<NSString *,DWSymbolModel *>    *fileNameSymbolMap;
-@property (nonatomic, strong) NSMutableDictionary<NSString *,DWFrameWorkModel *> *frameworkSymbolMap;
+@property (nonatomic, strong) NSMutableDictionary  *fileNameSymbolMap;
+@property (nonatomic, strong) NSMutableDictionary  *frameworkSymbolMap;
 
 @property (nonatomic, strong) NSURL    *linkMapFileURL;
 @property (nonatomic, strong) NSString *linkMapContent;
+
+@property (nonatomic, strong) NSURL *whitelistURL;
+@property (nonatomic, strong) NSSet *whitelistSet;
 
 @property (nonatomic, assign) BOOL frameworkAnalyze;
 @property (nonatomic, assign) BOOL showTop5;
@@ -26,6 +34,7 @@
 
 @property (nonatomic, copy) NSString *searchkey;
 
+@property (nonatomic, strong) NSArray *resultArray;
 @property (nonatomic, strong) NSMutableString *result;
 
 /// default
@@ -33,14 +42,17 @@
 
 @property (nonatomic, strong) DWSymbolViewModel *historyViewModel;
 
-- (void)buildCompareResult;
+- (void)makeMapFromContent:(NSString *)content;
+- (void)makeWhitelistSet:(NSString *)content;
+
+- (BOOL)displayCondition;
+- (BOOL)containsString:(NSString *)str;
 
 - (NSArray *)sortedWithArr:(NSArray *)arr;
+- (NSArray *)sortedWithArr:(NSArray *)arr style:(DWSortedStyle)style;
 
-// framework 按照size排序
-- (NSArray<DWFrameWorkModel *> *)sortedFrameworks;
+- (void)beginWithCompletionHandler:(void(^)(BOOL result, NSURL *url, NSString *path))handler;
 
-
-
+- (void)writeContentWithCompletionHandler:(void(^)(BOOL result, NSURL *url, NSString *path))handler;
 
 @end

@@ -44,6 +44,10 @@
 
 @implementation DWSymbolModel
 
+- (NSString *)key {
+    return self.fileName;
+}
+
 - (void)setFile:(NSString *)file {
     _fileName = nil;
     _frameworkName = nil;
@@ -77,16 +81,14 @@
     return _frameworkName;
 }
 
-- (NSString *)displayFileName {
-    if (!_displayFileName) {
-        _displayFileName = self.fileName;
+- (NSString *)showName {
+    if ([super showName]) {
+        return [super showName];
+    } else {
+        return self.fileName;
     }
-    return _displayFileName;
 }
 
-- (NSString *)showName {
-    return self.displayFileName;
-}
 
 @end
 
@@ -119,6 +121,14 @@
 }
 
 - (NSString *)showName {
+    if ([super showName]) {
+        return [super showName];
+    } else {
+        return self.frameworkName;
+    }
+}
+
+- (NSString *)key {
     return self.frameworkName;
 }
 

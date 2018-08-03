@@ -709,17 +709,10 @@
                                         <textView importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="zLH-fS-KrC">
                                             <rect key="frame" x="0.0" y="0.0" width="584" height="244"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <color key="textColor" red="0.77000000000000002" green="0.10199999999999999" blue="0.085999999999999993" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <size key="minSize" width="584" height="244"/>
-                                            <size key="maxSize" width="601" height="10000000"/>
-                                            <attributedString key="textStorage">
-                                                <fragment content="123">
-                                                    <attributes>
-                                                        <font key="NSFont" metaFont="smallSystem"/>
-                                                        <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
-                                                    </attributes>
-                                                </fragment>
-                                            </attributedString>
+                                            <size key="maxSize" width="655" height="10000000"/>
                                             <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                         </textView>
                                     </subviews>
@@ -729,7 +722,7 @@
                                     <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
-                                <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="ONL-ND-TtJ">
+                                <scroller key="verticalScroller" verticalHuggingPriority="750" horizontal="NO" id="ONL-ND-TtJ">
                                     <rect key="frame" x="585" y="1" width="15" height="244"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
@@ -768,8 +761,8 @@
                                     <action selector="chooseCurrentVersionFilePath:" target="NOm-F0-hfk" id="xiO-TX-XDo"/>
                                 </connections>
                             </button>
-                            <button translatesAutoresizingMaskIntoConstraints="NO" id="fu1-4S-rjX">
-                                <rect key="frame" x="18" y="320" width="350" height="18"/>
+                            <button misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fu1-4S-rjX">
+                                <rect key="frame" x="18" y="316" width="350" height="18"/>
                                 <buttonCell key="cell" type="check" title="是否按照差异size排序，默认按照当前版本size降序排序" bezelStyle="regularSquare" imagePosition="left" inset="2" id="1T5-ee-6wq">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" size="13" name=".PingFangSC-Regular"/>
@@ -798,7 +791,7 @@
                                     <font key="font" size="13" name=".PingFangSC-Regular"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="ouputFile:" target="NOm-F0-hfk" id="4bY-EM-YJX"/>
+                                    <action selector="erportExeclFile:" target="NOm-F0-hfk" id="JYc-AB-E7y"/>
                                 </connections>
                             </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Roy-47-I6S">
@@ -833,7 +826,7 @@
                             <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dlP-iU-ITm">
                                 <rect key="frame" x="472" y="344" width="148" height="22"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="单位KB，如果这个按照设置的大小" drawsBackground="YES" id="RgS-KK-YXX">
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="单位KB" drawsBackground="YES" id="RgS-KK-YXX">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -872,6 +865,28 @@
                                     <action selector="cancelWhiteList:" target="NOm-F0-hfk" id="QIy-pA-3dp"/>
                                 </connections>
                             </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8T5-xy-hwr">
+                                <rect key="frame" x="507" y="307" width="120" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="导出文本" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="z75-b2-gpG">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" size="13" name=".PingFangSC-Regular"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="erportFileData:" target="NOm-F0-hfk" id="y6Y-oU-51U"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MO9-Ex-0qc">
+                                <rect key="frame" x="378" y="307" width="120" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="导出定制数据" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="SeG-Rn-uGA">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" size="13" name=".PingFangSC-Regular"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="erportMakeData:" target="NOm-F0-hfk" id="X2h-Z0-hlE"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
                             <constraint firstItem="ALr-eZ-fys" firstAttribute="top" secondItem="gvW-Eu-zLm" secondAttribute="top" constant="14" id="0jK-6m-s4M"/>
@@ -907,12 +922,12 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="changeDisplayField" destination="dlP-iU-ITm" id="9go-EV-man"/>
                         <outlet property="changeDisplayKB" destination="gvW-Eu-zLm" id="ygv-NZ-mJk"/>
                         <outlet property="contentTextView" destination="zLH-fS-KrC" id="EQv-WP-zCh"/>
                         <outlet property="contentView" destination="jFt-sR-nuD" id="6Ed-sl-IqD"/>
                         <outlet property="currentPathField" destination="jFa-Uu-fij" id="yvn-FU-rIb"/>
                         <outlet property="dispalyKBField" destination="dlP-iU-ITm" id="IZz-46-gDW"/>
+                        <outlet property="erportCustomData" destination="MO9-Ex-0qc" id="geI-3a-Vba"/>
                         <outlet property="fileDiffButton" destination="gvW-Eu-zLm" id="BQ5-ab-m8X"/>
                         <outlet property="filePathField" destination="X8W-zP-y0k" id="hGg-O0-t1y"/>
                         <outlet property="groupButton" destination="jz7-uS-xpD" id="nK4-ZM-mU8"/>

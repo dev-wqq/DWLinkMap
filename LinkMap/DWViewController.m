@@ -7,11 +7,10 @@
 //
 
 #import "DWViewController.h"
-#import "DWBaseModel.h"
-#import "DWCalculateHelper.h"
 #import "DWSymbolViewModel.h"
 #import "DWSymbolViewModel+SingleLinkMap.h"
 #import "DWSymbolViewModel+ExportExecl.h"
+#import "DWSymbolViewModel+CompareLinkMap.h"
 
 typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     DWAnalyzeTypeNone   = 0,
@@ -39,6 +38,8 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
 /// 是否按照差异size排序，默认按照当前版本size降序排序
 @property (weak) IBOutlet NSButton *sortedDiffButton;
 /// 指示器
+@property (weak) IBOutlet NSButton *erportCustomData;
+
 @property (weak) IBOutlet NSProgressIndicator *indicator;
 ///
 @property (weak) IBOutlet NSTextField *searchField;
@@ -48,17 +49,8 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
 @property (weak) IBOutlet NSScrollView *contentView;//分析的内容
 @property (unsafe_unretained) IBOutlet NSTextView *contentTextView;
 
-@property (strong) NSURL *historyLinkMapFileURL;
-@property (strong) NSURL *currentLinkMapFileURL;
-@property (strong) NSURL *whitelistFileURL;
-
-@property (strong) NSString *historyLinkMapContent;
-@property (strong) NSString *currentLinkMapContent;
-
 @property (nonatomic, strong) DWSymbolViewModel *historyViewModel;
 @property (nonatomic, strong) DWSymbolViewModel *viewModel;
-
-@property (strong) NSMutableString *result;//分析的结果
 
 @property (nonatomic, strong) NSDateFormatter *dateFormatter;
 
@@ -76,12 +68,23 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     XCode -> Project -> Build Settings -> 把Write Link Map File选项设为yes，并指定好linkMap的存储位置 \n\
     2.工程编译完成后，在编译目录里找到Link Map文件（txt类型） \n\
     默认的文件地址：~/Library/Developer/Xcode/DerivedData/XXX-xxxxxxxxxxxxx/Build/Intermediates/XXX.build/Debug-iphoneos/XXX.build/ \n\
-    3.回到本应用，点击“选择文件”，打开Link Map文件  \n\
-    4.点击“开始”，解析Link Map文件 \n\
-    5.点击“输出文件”，得到解析后的Link Map文件 \n\
-    6. * 输入目标文件的关键字(例如：libIM)，然后点击“开始”。实现搜索功能 \n\
-    7. * 勾选“分组解析”，然后点击“开始”。实现对不同库的目标文件进行分组";
-    
+    3.支持两个版本 LinkMap 文件对比差异： \n\
+      * 点击“选择历史版本linkMap”，打开老之前版本 Link Map文件  \n\
+      * 点击“选择历史版本linkMap”，打开老之前版本 Link Map文件 \n\
+      * 点击“只分析模块白名单路径”，只有在分模块解析勾选才生效，只对比名单内的模块   \n\
+    4. 单选项： \n\
+        * 勾选“分模块分析”，实现对不同库的目标文件惊醒分组；\n\
+            * 勾选“显示每个模块top5文件”, 实现每个分组显示最大的五个子文件；\n\
+            * 勾选“显示>=50kb”, 实现每个组臃肿文件夹显示，可以自定义大小，\n\
+    默认50kb; \n\
+        * 同时勾选两个选项，实现每个分组前五并且大于臃肿文件值；\n\
+        * 勾选“是否按照差异size排序”，默认是按照当前版本size大小排序，如果勾选，按照差异大小降序排序；\n\
+    5.点击“开始”，开始解析 LinkMap文件 \n\
+    6.导出文件： \n\
+        * 任何文件导出之前都需要先添加linkMap文件和点击开始 \n\
+        * 点击“导出文本”和“导出Execl”都是导出TextView中显示的内容到文件\n\
+        * 点击“导出定制数据” 定制分组版本输出对比数据 \n\
+        * 搜索目前不支持分模块解析，使用containsString 实现";
     self.historyViewModel = [[DWSymbolViewModel alloc] init];
     self.viewModel = [[DWSymbolViewModel alloc] init];
     self.viewModel.historyViewModel = self.historyViewModel;
@@ -99,14 +102,15 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
 
 - (IBAction)cancelWhiteList:(id)sender {
     self.whitelistPathField.stringValue = @"分析白名单";
-    self.whitelistFileURL = nil;
+    self.viewModel.whitelistURL = nil;
+    self.viewModel.whitelistSet = nil;
 }
 
 #pragma make - Choose File Path
 
 - (IBAction)chooseHistoryVersionFilePath:(id)sender {
     __weak typeof(self) wself = self;
-    [self beginWithCompletionHandler:^(BOOL result, NSURL *url, NSString *path) {
+    [self.viewModel beginWithCompletionHandler:^(BOOL result, NSURL *url, NSString *path) {
         if (result) {
             wself.historyPathField.stringValue = path;
             wself.historyViewModel.linkMapFileURL = url;
@@ -116,7 +120,7 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
 
 - (IBAction)chooseCurrentVersionFilePath:(id)sender {
     __weak typeof(self) wself = self;
-    [self beginWithCompletionHandler:^(BOOL result, NSURL *url, NSString *path) {
+    [self.viewModel beginWithCompletionHandler:^(BOOL result, NSURL *url, NSString *path) {
         if (result) {
             wself.currentPathField.stringValue = path;
             wself.viewModel.linkMapFileURL  = url;
@@ -126,31 +130,10 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
 
 - (IBAction)chooseWhitelistFilePath:(id)sender {
     __weak typeof(self) wself = self;
-    [self beginWithCompletionHandler:^(BOOL result, NSURL *url, NSString *path) {
+    [self.viewModel beginWithCompletionHandler:^(BOOL result, NSURL *url, NSString *path) {
         if (result) {
             wself.whitelistPathField.stringValue = path;
-            wself.whitelistFileURL = url;
-        }
-    }];
-}
-
-- (void)beginWithCompletionHandler:(void(^)(BOOL result, NSURL *url, NSString *path))handler {
-    NSOpenPanel *panel = [NSOpenPanel openPanel];
-    panel.allowsMultipleSelection = NO;
-    panel.canChooseDirectories = NO;
-    panel.resolvesAliases = NO;
-    panel.canChooseFiles = YES;
-    
-    [panel beginWithCompletionHandler:^(NSInteger result){
-        if (!handler) {
-            return ;
-        }
-        if (result == NSFileHandlingPanelOKButton) {
-            NSURL *url = [[panel URLs] objectAtIndex:0];
-            NSString *filePath = url.path;
-            handler(YES, url, filePath);
-        } else {
-            handler(NO, nil, nil);
+            wself.viewModel.whitelistURL = url;
         }
     }];
 }
@@ -161,7 +144,7 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     // 判断路径是否获取成功 or 正确
     BOOL isExistHistory   = [self fileExistsAtPathURL:self.historyViewModel.linkMapFileURL];
     BOOL isExistCurrent   = [self fileExistsAtPathURL:self.viewModel.linkMapFileURL];
-    BOOL isExistWhitelist = [self fileExistsAtPathURL:self.whitelistFileURL];
+    BOOL isExistWhitelist = [self fileExistsAtPathURL:self.viewModel.whitelistURL];
     
     DWAnalyzeType type = DWAnalyzeTypeNone;
     if (isExistCurrent && isExistHistory && isExistWhitelist) {
@@ -212,7 +195,12 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
             });
             return ;
         }
-        self.viewModel.linkMapContent = currentContent;
+        if (isWhitelist) {
+            NSString *whitelistContent = [self stringWithContentsOfURL:self.viewModel.whitelistURL];
+            [self.viewModel makeWhitelistSet:whitelistContent];
+        }
+        
+        [self.viewModel makeMapFromContent:currentContent];
         [self.viewModel buildSingleResult];
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -229,7 +217,6 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSString *historyContent = [self stringWithContentsOfURL:self.historyViewModel.linkMapFileURL];
         NSString *currentContent = [self stringWithContentsOfURL:self.viewModel.linkMapFileURL];
-        
         if (![self checkContent:historyContent]) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self stopAnimation];
@@ -244,8 +231,16 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
             });
             return ;
         }
-        self.historyViewModel.linkMapContent = historyContent;
-        self.viewModel.linkMapContent = currentContent;
+        
+        if (isWhitelist) {
+            NSString *whitelistContent = [self stringWithContentsOfURL:self.viewModel.whitelistURL];
+            [self.viewModel makeWhitelistSet:whitelistContent];
+        }
+        
+        [self.historyViewModel makeMapFromContent:historyContent];
+        [self.viewModel makeMapFromContent:currentContent];
+        ///
+        [self.viewModel combineHistoryData]; // 合并历史数据
         [self.viewModel buildCompareResult];
     
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -254,24 +249,50 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
         });
     });
 }
+#pragma make -
 
-- (IBAction)ouputFile:(id)sender {
-//    NSOpenPanel* panel = [NSOpenPanel openPanel];
-//    [panel setAllowsMultipleSelection:NO];
-//    [panel setCanChooseDirectories:YES];
-//    [panel setResolvesAliases:NO];
-//    [panel setCanChooseFiles:NO];
-//
-//    [panel beginWithCompletionHandler:^(NSInteger result) {
-//        if (result == NSFileHandlingPanelOKButton) {
-//            NSURL*  theDoc = [[panel URLs] objectAtIndex:0];
-//            NSMutableString *content =[[NSMutableString alloc]initWithCapacity:0];
-//            [content appendString:[theDoc path]];
-    NSString *str = @"/Users/wangqiqi1/Desktop/linkMap.xlsx";
-//            [self.viewModel exportExeclWithCompare:YES fileName:str];
-    [self.viewModel exportReportDataWithFileName:str];
-//        }
-//    }];
+- (IBAction)erportMakeData:(id)sender {
+    __weak typeof(self) wself = self;
+    [self.viewModel writeContentWithCompletionHandler:^(BOOL result, NSURL *url, NSString *path) {
+        if (!result) {
+            return ;
+        }
+        NSString *dateStr = [wself.dateFormatter stringFromDate:[NSDate date]];
+        NSString *filePath = [NSString stringWithFormat:@"%@/linkMapCompare %@.xlsx",path, dateStr];
+        [wself.viewModel exportReportDataWithFileName:filePath];
+    }];
+}
+
+#pragma make -
+
+- (IBAction)erportFileData:(id)sender {
+    __weak typeof(self) wself = self;
+    [self.viewModel writeContentWithCompletionHandler:^(BOOL result, NSURL *url, NSString *path) {
+        if (!result) {
+            return ;
+        }
+        NSString *dateStr = [wself.dateFormatter stringFromDate:[NSDate date]];
+        NSString *filePath = [NSString stringWithFormat:@"%@/linkMap %@.txt",path, dateStr];
+        [wself.viewModel.result writeToFile:filePath atomically:YES encoding:NSUTF8StringEncoding error:nil];
+    }];
+}
+
+- (IBAction)erportExeclFile:(id)sender {
+    __weak typeof(self) wself = self;
+    [self.viewModel writeContentWithCompletionHandler:^(BOOL result, NSURL *url, NSString *path) {
+        if (!result) {
+            return ;
+        }
+        NSString *dateStr = [wself.dateFormatter stringFromDate:[NSDate date]];
+        
+        if (wself.viewModel.historyViewModel) {
+            NSString *filePath = [NSString stringWithFormat:@"%@/linkMapCompare %@.xlsx",path, dateStr];
+            [wself.viewModel exportCompareVersionExecl:filePath];
+        } else {
+            NSString *filePath = [NSString stringWithFormat:@"%@/linkMap %@.xlsx",path, dateStr];
+            [wself.viewModel exportSingleExecl:filePath];
+        }
+    }];
 }
 
 #pragma make - Animation Methods
