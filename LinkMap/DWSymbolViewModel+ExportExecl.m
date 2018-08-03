@@ -128,7 +128,7 @@ static NSString * const kHistoryVersion = @"v7.0.12";
     int totalNumber = 0;
     for (int index = 0; index < dataSource.count; index++) {
         DWBaseModel *model = dataSource[index];
-        totalNumber = totalNumber + 2;
+        totalNumber = totalNumber + 1;
         [self addCompareRowForWorkSheet:worksheet model:model indexName:@(index+1).stringValue index:totalNumber];
         if ([model isKindOfClass:[DWFrameWorkModel class]] &&
             ((DWFrameWorkModel *)model).displayArr.count > 0) {
@@ -147,7 +147,7 @@ static NSString * const kHistoryVersion = @"v7.0.12";
         totalSize += model.size;
         hisTotalSize += model.historySize;
     }
-    NSInteger lastIndex = totalNumber+2;
+    NSInteger lastIndex = totalNumber+1;
     [self addCompareTotalForWorkSheet:worksheet
                             totalSize:totalSize
                          hisTotalSize:hisTotalSize
@@ -162,7 +162,7 @@ static NSString * const kHistoryVersion = @"v7.0.12";
     int totalNumber = 0;
     for (int index = 0; index < dataSource.count; index++) {
         DWBaseModel *model = dataSource[index];
-        totalNumber = totalNumber + 2;
+        totalNumber = totalNumber + 1;
         [self addCompareRowForWorkSheet:worksheet model:model indexName:@(index+1).stringValue index:totalNumber];
         if ([model isKindOfClass:[DWFrameWorkModel class]]) {
             DWFrameWorkModel *frameworkModel = (DWFrameWorkModel *)model;
@@ -181,7 +181,7 @@ static NSString * const kHistoryVersion = @"v7.0.12";
         totalSize += model.size;
         hisTotalSize += model.historySize;
     }
-    NSInteger lastIndex = totalNumber+2;
+    NSInteger lastIndex = totalNumber+1;
     [self addCompareTotalForWorkSheet:worksheet
                             totalSize:totalSize
                          hisTotalSize:hisTotalSize

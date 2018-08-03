@@ -55,7 +55,7 @@ NSInteger const kShowTopNumber = 5;
 }
 
 - (void)buildCompareResult:(NSArray *)fileNames isFormeworkSet:(BOOL)isFormeworkSet {
-    self.result = [@"序号\t\t当前版本\t\t历史版本\t\t版本差异\t\t 名称 \r\n\r\n" mutableCopy];
+    self.result = [@"序号\t当前版本\t历史版本\t版本差异\t文件大小\r\n\r\n" mutableCopy];
     NSUInteger totalSize = 0;
     NSUInteger hisTotalSize = 0;
     NSMutableArray *mArr = [NSMutableArray array];
@@ -63,7 +63,11 @@ NSInteger const kShowTopNumber = 5;
     for (int index = 0; index < fileNames.count; index++) {
         DWBaseModel *symbol = fileNames[index];
         if ([self displayCondition]) {
-            if ([self containsString:symbol.key]) {
+            NSString *frameworkName = symbol.key;
+            if ([symbol isKindOfClass:[DWSymbolModel class]]) {
+                frameworkName = ((DWSymbolModel *)symbol).frameworkName;
+            }
+            if ([self containsString:symbol.key frameworkName:frameworkName]) {
                 if (isFormeworkSet) {
                     [self appendResultWithFrameworkModel:symbol index:index+1];
                 } else {
@@ -90,7 +94,7 @@ NSInteger const kShowTopNumber = 5;
 }
 
 - (void)appendResultWithSumbolModel:(DWBaseModel *)model index:(NSInteger)index {
-    [self.result appendFormat:@"%ld\t\t%@\t\t%@\t\t%@\t\t%@\r\n",index,model.sizeStr, model.historySizeStr, model.differentSizeStr, model.showName];
+    [self.result appendFormat:@"%ld\t%@\t%@\t%@\t%@\r\n",index,model.sizeStr, model.historySizeStr, model.differentSizeStr, model.showName];
 }
 
 #pragma make - 按照framework 分组
@@ -146,13 +150,13 @@ NSInteger const kShowTopNumber = 5;
 }
 
 - (void)appendResultWithFrameworkModel:(DWBaseModel *)model index:(NSInteger)index {
-    [self.result appendFormat:@"%ld\t\t%@\t\t%@\t\t%@\t\t%@\r\n",index,model.sizeStr, model.historySizeStr, model.differentSizeStr, model.showName];
+    [self.result appendFormat:@"%ld\t%@\t%@\t%@\t%@\r\n",index,model.sizeStr, model.historySizeStr, model.differentSizeStr, model.showName];
     DWFrameWorkModel *frameworkModel = (DWFrameWorkModel *)model;
     if (frameworkModel.displayArr.count > 0) {
         for (int i = 0; i < frameworkModel.displayArr.count; i++) {
             DWSymbolModel *fileModel = frameworkModel.displayArr[i];
             NSString *subIndex = [NSString stringWithFormat:@"%ld_%d",(long)index,i];
-            [self.result appendFormat:@"%@\t\t%@\t\t%@\t\t%@\t\t%@\r\n",subIndex,fileModel.sizeStr, fileModel.historySizeStr, fileModel.differentSizeStr, fileModel.fileName];
+            [self.result appendFormat:@"%@\t%@\t%@\t%@\t%@\r\n",subIndex,fileModel.sizeStr, fileModel.historySizeStr, fileModel.differentSizeStr, fileModel.showName];
         }
     }
 }

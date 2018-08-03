@@ -191,15 +191,19 @@
 }
 
 - (BOOL)containsString:(NSString *)str {
+    return [self containsString:str frameworkName:str];
+}
+
+- (BOOL)containsString:(NSString *)str frameworkName:(NSString *)frameworkName {
     if (self.searchkey.length > 0 ) {
         if (self.whitelistSet.count > 0) {
-            return [str containsString:self.searchkey] && [self.whitelistSet containsObject:str];
+            return [str containsString:self.searchkey] && [self.whitelistSet containsObject:frameworkName];
         } else {
             return NO;
         }
     } else {
         if (self.whitelistSet.count > 0) {
-            return [self.whitelistSet containsObject:str];
+            return [self.whitelistSet containsObject:frameworkName];
         } else {
             return NO;
         }

@@ -47,6 +47,7 @@ typedef NS_ENUM(NSInteger, DWSortedStyle) {
 
 - (BOOL)displayCondition;
 - (BOOL)containsString:(NSString *)str;
+- (BOOL)containsString:(NSString *)str frameworkName:(NSString *)frameworkName;
 
 - (NSArray *)sortedWithArr:(NSArray *)arr;
 - (NSArray *)sortedWithArr:(NSArray *)arr style:(DWSortedStyle)style;

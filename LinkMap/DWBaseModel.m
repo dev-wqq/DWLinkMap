@@ -28,7 +28,7 @@
 }
 
 - (NSString *)showName {
-    return nil;
+    return _showName ? _showName : self.key;
 }
 
 @end
@@ -81,15 +81,6 @@
     return _frameworkName;
 }
 
-- (NSString *)showName {
-    if ([super showName]) {
-        return [super showName];
-    } else {
-        return self.fileName;
-    }
-}
-
-
 @end
 
 @implementation DWFrameWorkModel
@@ -118,14 +109,6 @@
         }
     }];
     return sortedSymbols;
-}
-
-- (NSString *)showName {
-    if ([super showName]) {
-        return [super showName];
-    } else {
-        return self.frameworkName;
-    }
 }
 
 - (NSString *)key {

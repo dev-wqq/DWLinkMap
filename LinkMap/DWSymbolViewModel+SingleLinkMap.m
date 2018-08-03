@@ -27,7 +27,11 @@
     for (int index = 0; index < frameworks.count; index++) {
         DWBaseModel *symbol = frameworks[index];
         if ([self displayCondition]) {
-            if ([self containsString:symbol.key]) {
+            NSString *frameworkName = symbol.key;
+            if ([symbol isKindOfClass:[DWSymbolModel class]]) {
+                frameworkName = ((DWSymbolModel *)symbol).frameworkName;
+            }
+            if ([self containsString:symbol.key frameworkName:frameworkName]) {
                 [self appendResultWithFileModel:symbol index:index+1];
                 totalSize += symbol.size;
                 [mArr addObject:symbol];
