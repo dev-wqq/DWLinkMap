@@ -9,7 +9,7 @@
 #import "DWBaseModel.h"
 #import "DWCalculateHelper.h"
 
-@implementation DWBaseModel
+@implementation DWCompareItem
 
 - (NSString *)sizeStr {
     return [DWCalculateHelper calculateSize:self.size];
@@ -27,8 +27,26 @@
     return [DWCalculateHelper calculateDiffSize:self.differentSize];
 }
 
+@end
+
+@implementation DWBaseModel
+
+- (instancetype)init {
+    if (self = [super init]) {
+        _total = [[DWCompareItem alloc] init];
+        _text  = [[DWCompareItem alloc] init];
+        _data  = [[DWCompareItem alloc] init];
+    }
+    return nil;
+        
+}
+
 - (NSString *)showName {
     return _showName ? _showName : self.key;
+}
+
+- (NSString *)key {
+    return nil;
 }
 
 @end
@@ -87,9 +105,9 @@
 
 - (NSArray<DWSymbolModel *> *)sortedSymbols {
     NSArray *sortedSymbols = [self.subMap.allValues sortedArrayUsingComparator:^NSComparisonResult(DWSymbolModel *  _Nonnull obj1, DWSymbolModel *  _Nonnull obj2) {
-        if(obj1.size > obj2.size) {
+        if(obj1.total.size > obj2.total.size) {
             return NSOrderedAscending;
-        } else if (obj1.size < obj2.size) {
+        } else if (obj1.total.size < obj2.total.size) {
             return NSOrderedDescending;
         } else {
             return NSOrderedSame;
@@ -100,9 +118,9 @@
 
 - (NSArray<DWSymbolModel *> *)sortedDiffSizeSymbols {
     NSArray *sortedSymbols = [self.subMap.allValues sortedArrayUsingComparator:^NSComparisonResult(DWSymbolModel *  _Nonnull obj1, DWSymbolModel *  _Nonnull obj2) {
-        if(obj1.differentSize > obj2.differentSize) {
+        if(obj1.total.differentSize > obj2.total.differentSize) {
             return NSOrderedAscending;
-        } else if (obj1.differentSize < obj2.differentSize) {
+        } else if (obj1.total.differentSize < obj2.total.differentSize) {
             return NSOrderedDescending;
         } else {
             return NSOrderedSame;

@@ -25,13 +25,13 @@
     NSArray *sortedSymbols = [arr sortedArrayUsingComparator:^NSComparisonResult(DWBaseModel *obj1, DWBaseModel *obj2) {
         switch (style) {
             case DWSortedSize:
-                return [self compare:obj1.size otherSize:obj2.size];
+                return [self compare:obj1.total.size otherSize:obj2.total.size];
             case DWSortedHistorySize:
-                return [self compare:obj1.historySize otherSize:obj2.historySize];
+                return [self compare:obj1.total.historySize otherSize:obj2.total.historySize];
             case DWSortedDiffSize:
-                return [self compare:obj1.differentSize otherSize:obj2.differentSize];
+                return [self compare:obj1.total.differentSize otherSize:obj2.total.differentSize];
         }
-        return [self compare:obj1.size otherSize:obj2.size];
+        return [self compare:obj1.total.size otherSize:obj2.total.size];
     }];
     return sortedSymbols;
 }
@@ -167,8 +167,8 @@
                         
                         DWFrameWorkModel *setModel = frameworkSymbolMap[symbol.frameworkName];
                         if(symbol) {
-                            symbol.size += size;
-                            setModel.size += size;
+                            symbol.total.size += size;
+                            setModel.total.size += size;
                         }
                     }
                 }

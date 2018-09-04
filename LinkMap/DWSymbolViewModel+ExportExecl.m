@@ -136,7 +136,7 @@ static NSString * const kHistoryVersion = @"v7.1.1";
             int indexSorted = 0;
             for (int j = 0; j < frameworkModel.displayArr.count; j++) {
                 DWBaseModel *subModel = frameworkModel.displayArr[j];
-                if (subModel.differentSize != 0) {
+                if (subModel.total.differentSize != 0) {
                     totalNumber++;
                     indexSorted++;
                     NSString *indexName = [NSString stringWithFormat:@"%d_%d",index+1,indexSorted];
@@ -144,8 +144,8 @@ static NSString * const kHistoryVersion = @"v7.1.1";
                 }
             }
         }
-        totalSize += model.size;
-        hisTotalSize += model.historySize;
+        totalSize += model.total.size;
+        hisTotalSize += model.total.historySize;
     }
     NSInteger lastIndex = totalNumber+1;
     [self addCompareTotalForWorkSheet:worksheet
@@ -170,7 +170,7 @@ static NSString * const kHistoryVersion = @"v7.1.1";
             int indexSorted = 0;
             for (int j = 0; j < sortedArr.count; j++) {
                 DWBaseModel *subModel = sortedArr[j];
-                if (subModel.differentSize != 0) {
+                if (subModel.total.differentSize != 0) {
                     totalNumber++;
                     indexSorted++;
                     NSString *indexName = [NSString stringWithFormat:@"%d_%d",index+1,indexSorted];
@@ -178,8 +178,8 @@ static NSString * const kHistoryVersion = @"v7.1.1";
                 }
             }
         }
-        totalSize += model.size;
-        hisTotalSize += model.historySize;
+        totalSize += model.total.size;
+        hisTotalSize += model.total.historySize;
     }
     NSInteger lastIndex = totalNumber+1;
     [self addCompareTotalForWorkSheet:worksheet
@@ -198,8 +198,8 @@ static NSString * const kHistoryVersion = @"v7.1.1";
         DWBaseModel *model = dataSource[index];
         
         [self addCompareRowForWorkSheet:worksheet model:model index:index+1];
-        totalSize += model.size;
-        hisTotalSize += model.historySize;
+        totalSize += model.total.size;
+        hisTotalSize += model.total.historySize;
     }
     NSInteger lastIndex = dataSource.count + 1;
     [self addCompareTotalForWorkSheet:worksheet
@@ -224,16 +224,16 @@ static NSString * const kHistoryVersion = @"v7.1.1";
     worksheet_write_string(worksheet, index, row, c_number, _knameFormat);
     row++;
     
-    char const *c_current = [model.sizeStr cStringUsingEncoding:NSUTF8StringEncoding];
+    char const *c_current = [model.total.sizeStr cStringUsingEncoding:NSUTF8StringEncoding];
     worksheet_write_string(worksheet, index, row, c_current, _knameFormat);
     row++;
     
     if (self.historyViewModel) {
-        char const *c_history = [model.historySizeStr cStringUsingEncoding:NSUTF8StringEncoding];
+        char const *c_history = [model.total.historySizeStr cStringUsingEncoding:NSUTF8StringEncoding];
         worksheet_write_string(worksheet, index, row, c_history, _knameFormat);
         row++;
         
-        char const *c_diff = [model.differentSizeStr cStringUsingEncoding:NSUTF8StringEncoding];
+        char const *c_diff = [model.total.differentSizeStr cStringUsingEncoding:NSUTF8StringEncoding];
         worksheet_write_string(worksheet, index, row, c_diff, _knameFormat);
         row++;
     }

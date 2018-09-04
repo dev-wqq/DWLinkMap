@@ -36,9 +36,9 @@ NSInteger const kShowTopNumber = 5;
         DWSymbolModel *curModel = (DWSymbolModel *)self.fileNameSymbolMap[fileName];
         DWSymbolModel *hisModel = (DWSymbolModel *)self.historyViewModel.fileNameSymbolMap[fileName];
         
-        curModel.historySize = hisModel.size;
+        curModel.total.historySize = hisModel.total.size;
         if (!hisModel) {
-            curModel.showName = [NSString stringWithFormat:@"新增 %@ %@",curModel.fileName, @(curModel.size).stringValue];
+            curModel.showName = [NSString stringWithFormat:@"新增 %@ %@",curModel.fileName, @(curModel.total.size).stringValue];
         }
         [temp removeObjectForKey:fileName];
     }
@@ -47,8 +47,8 @@ NSInteger const kShowTopNumber = 5;
             DWSymbolModel *hisModel = temp[key];
             DWSymbolModel *model = [[DWSymbolModel alloc] init];
             model.file = hisModel.file;
-            model.historySize = hisModel.size;
-            model.showName = [NSString stringWithFormat:@"已删除 %@ %@",hisModel.frameworkName, @(hisModel.historySize).stringValue];
+            model.total.historySize = hisModel.total.size;
+            model.showName = [NSString stringWithFormat:@"已删除 %@ %@",hisModel.frameworkName, @(hisModel.total.historySize).stringValue];
             self.fileNameSymbolMap[hisModel.fileName] = model;
         }
     }
@@ -73,8 +73,8 @@ NSInteger const kShowTopNumber = 5;
                 } else {
                     [self appendResultWithSumbolModel:symbol index:index+1];
                 }
-                totalSize += symbol.size;
-                hisTotalSize += symbol.historySize;
+                totalSize += symbol.total.size;
+                hisTotalSize += symbol.total.historySize;
                 [mArr addObject:symbol];
             }
         } else {
@@ -83,8 +83,8 @@ NSInteger const kShowTopNumber = 5;
             } else {
                 [self appendResultWithSumbolModel:symbol index:index+1];
             }
-            totalSize += symbol.size;
-            hisTotalSize += symbol.historySize;
+            totalSize += symbol.total.size;
+            hisTotalSize += symbol.total.historySize;
             [mArr addObject:symbol];
         }
     }
@@ -107,7 +107,7 @@ NSInteger const kShowTopNumber = 5;
 }
 
 - (void)appendResultWithSumbolModel:(DWBaseModel *)model index:(NSInteger)index {
-    [self.result appendFormat:@"%ld\t%@\t%@\t%@\t%@\r\n",index,model.sizeStr, model.historySizeStr, model.differentSizeStr, model.showName];
+    [self.result appendFormat:@"%ld\t%@\t%@\t%@\t%@\r\n",index,model.total.sizeStr, model.total.historySizeStr, model.total.differentSizeStr, model.showName];
 }
 
 #pragma make - 按照framework 分组
@@ -118,10 +118,10 @@ NSInteger const kShowTopNumber = 5;
         DWFrameWorkModel *curSetModel = (DWFrameWorkModel *)self.frameworkSymbolMap[key];
         DWFrameWorkModel *hisSetModel = (DWFrameWorkModel *)self.historyViewModel.frameworkSymbolMap[key];
         
-        curSetModel.historySize = hisSetModel.size;
+        curSetModel.total.historySize = hisSetModel.total.size;
         curSetModel.historySubMap = hisSetModel.subMap;
         if (!hisSetModel) {
-            curSetModel.showName = [NSString stringWithFormat:@"新增 %@ %@",curSetModel.frameworkName, @(curSetModel.size).stringValue];
+            curSetModel.showName = [NSString stringWithFormat:@"新增 %@ %@",curSetModel.frameworkName, @(curSetModel.total.size).stringValue];
         }
         
         // 只显示top5
@@ -135,10 +135,10 @@ NSInteger const kShowTopNumber = 5;
             for (int i = 0; i < count; i++) {
                 DWSymbolModel *symbolModel = array[i];
                 DWSymbolModel *historySymbolModel = curSetModel.historySubMap[symbolModel.fileName];
-                symbolModel.historySize = historySymbolModel.size;
-                if (self.showMoreThanSize && symbolModel.size >= self.moreThanSize*kCalculateConstant) {
+                symbolModel.total.historySize = historySymbolModel.total.size;
+                if (self.showMoreThanSize && symbolModel.total.size >= self.moreThanSize*kCalculateConstant) {
                     [subArray addObject:symbolModel];
-                } else if (self.showMoreThanSize && symbolModel.size < self.moreThanSize*kCalculateConstant) {
+                } else if (self.showMoreThanSize && symbolModel.total.size < self.moreThanSize*kCalculateConstant) {
                     break;
                 } else {
                     [subArray addObject:symbolModel];
@@ -154,22 +154,22 @@ NSInteger const kShowTopNumber = 5;
             DWFrameWorkModel *setModel = [[DWFrameWorkModel alloc] init];
             setModel.subMap = hisSetModel.subMap;
             setModel.historySubMap = hisSetModel.historySubMap;
-            setModel.historySize = hisSetModel.size;
+            setModel.total.historySize = hisSetModel.total.size;
             setModel.frameworkName = hisSetModel.frameworkName;
-            setModel.showName = [NSString stringWithFormat:@"已删除 %@ %@",hisSetModel.frameworkName, @(setModel.historySize).stringValue];
+            setModel.showName = [NSString stringWithFormat:@"已删除 %@ %@",hisSetModel.frameworkName, @(setModel.total.historySize).stringValue];
             self.frameworkSymbolMap[hisSetModel.frameworkName] = setModel;
         }
     }
 }
 
 - (void)appendResultWithFrameworkModel:(DWBaseModel *)model index:(NSInteger)index {
-    [self.result appendFormat:@"%ld\t%@\t%@\t%@\t%@\r\n",index,model.sizeStr, model.historySizeStr, model.differentSizeStr, model.showName];
+    [self.result appendFormat:@"%ld\t%@\t%@\t%@\t%@\r\n",index,model.total.sizeStr, model.total.historySizeStr, model.total.differentSizeStr, model.showName];
     DWFrameWorkModel *frameworkModel = (DWFrameWorkModel *)model;
     if (frameworkModel.displayArr.count > 0) {
         for (int i = 0; i < frameworkModel.displayArr.count; i++) {
             DWSymbolModel *fileModel = frameworkModel.displayArr[i];
             NSString *subIndex = [NSString stringWithFormat:@"%ld_%d",(long)index,i];
-            [self.result appendFormat:@"%@\t%@\t%@\t%@\t%@\r\n",subIndex,fileModel.sizeStr, fileModel.historySizeStr, fileModel.differentSizeStr, fileModel.showName];
+            [self.result appendFormat:@"%@\t%@\t%@\t%@\t%@\r\n",subIndex,fileModel.total.sizeStr, fileModel.total.historySizeStr, fileModel.total.differentSizeStr, fileModel.showName];
         }
     }
 }

@@ -8,7 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-@interface DWBaseModel: NSObject
+
+@interface DWCompareItem: NSObject
 
 /// 当前版本size
 @property (nonatomic, assign)           NSInteger size;//大小
@@ -19,6 +20,26 @@
 /// 版本差异size size - historySize
 @property (nonatomic, assign, readonly) NSInteger differentSize;
 @property (nonatomic, copy  , readonly) NSString *differentSizeStr;
+
+@end
+
+@interface DWBaseModel: NSObject
+
+@property (nonatomic, strong) DWCompareItem *total;
+
+@property (nonatomic, strong) DWCompareItem *text;
+
+@property (nonatomic, strong) DWCompareItem *data;
+
+/// 当前版本size
+//@property (nonatomic, assign)           NSInteger size;//大小
+//@property (nonatomic, copy, readonly)   NSString  *sizeStr;
+/// 历史版本size
+//@property (nonatomic, assign)           NSInteger historySize;
+//@property (nonatomic, copy, readonly)   NSString  *historySizeStr;
+/// 版本差异size size - historySize
+//@property (nonatomic, assign, readonly) NSInteger differentSize;
+//@property (nonatomic, copy  , readonly) NSString *differentSizeStr;
 
 @property (nonatomic, copy) NSString *showName;
 @property (nonatomic, copy, readonly) NSString *key;

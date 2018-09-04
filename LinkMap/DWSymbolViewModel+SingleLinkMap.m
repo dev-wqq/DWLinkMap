@@ -33,12 +33,12 @@
             }
             if ([self containsString:symbol.key frameworkName:frameworkName]) {
                 [self appendResultWithFileModel:symbol index:index+1];
-                totalSize += symbol.size;
+                totalSize += symbol.total.size;
                 [mArr addObject:symbol];
             }
         } else {
             [self appendResultWithFileModel:symbol index:index+1];
-            totalSize += symbol.size;
+            totalSize += symbol.total.size;
             [mArr addObject:symbol];
         }
     }
@@ -50,12 +50,12 @@
 }
 
 - (void)appendResultWithFileModel:(DWBaseModel *)model index:(NSInteger)index {
-    [self.result appendFormat:@"%ld\t%@\t%@\r\n",index,model.sizeStr, model.showName];
+    [self.result appendFormat:@"%ld\t%@\t%@\r\n",index,model.total.sizeStr, model.showName];
     if ([model isKindOfClass:[DWFrameWorkModel class]]) {
         DWFrameWorkModel *framework = (DWFrameWorkModel *)model;
         if (framework.displayArr.count > 0) {
             for (DWSymbolModel *fileModel in framework.displayArr) {
-                [self.result appendFormat:@"  \t%@\t%@\r\n",fileModel.sizeStr, fileModel.showName];
+                [self.result appendFormat:@"  \t%@\t%@\r\n",fileModel.total.sizeStr, fileModel.showName];
             }
             [self.result appendFormat:@"\r\n"];
         }
