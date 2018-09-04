@@ -37,16 +37,12 @@
         _text  = [[DWCompareItem alloc] init];
         _data  = [[DWCompareItem alloc] init];
     }
-    return nil;
+    return self;
         
 }
 
 - (NSString *)showName {
     return _showName ? _showName : self.key;
-}
-
-- (NSString *)key {
-    return nil;
 }
 
 @end

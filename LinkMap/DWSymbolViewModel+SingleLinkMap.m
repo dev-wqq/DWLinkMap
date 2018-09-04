@@ -21,7 +21,7 @@
     } else {
         frameworks = [self sortedWithArr:self.fileNameSymbolMap.allValues];
     }
-    self.result = [@"序号\t文件大小\t文件名称\r\n\r\n" mutableCopy];
+    self.result = [@"序号\t文件大小\t__Text\t__Data\t文件名称\r\n\r\n" mutableCopy];
     NSUInteger totalSize = 0;
     NSMutableArray *mArr = [NSMutableArray array];
     for (int index = 0; index < frameworks.count; index++) {
@@ -44,18 +44,18 @@
     }
     self.resultArray = mArr.copy;
 
-    [self.result appendFormat:@"\r\n__TextSize: %@",[DWCalculateHelper calculateSize:self.totalTextSize]];
-    [self.result appendFormat:@"\r\n__DataSize: %@",[DWCalculateHelper calculateSize:self.totalDataSize]];
+    [self.result appendFormat:@"\r\n__TextSize: %@\t%@",[DWCalculateHelper calculateSize:self.totalTextSize], @(self.totalTextSize)];
+    [self.result appendFormat:@"\r\n__DataSize: %@\t%@",[DWCalculateHelper calculateSize:self.totalDataSize], @(self.totalDataSize)];
     [self.result appendFormat:@"\r\n总大小: %@",[DWCalculateHelper calculateSize:totalSize]];
 }
 
 - (void)appendResultWithFileModel:(DWBaseModel *)model index:(NSInteger)index {
-    [self.result appendFormat:@"%ld\t%@\t%@\r\n",index,model.total.sizeStr, model.showName];
+    [self.result appendFormat:@"%ld\t%@\t%@\t%@\t%@\r\n",index,model.total.sizeStr,model.text.sizeStr,model.data.sizeStr, model.showName];
     if ([model isKindOfClass:[DWFrameWorkModel class]]) {
         DWFrameWorkModel *framework = (DWFrameWorkModel *)model;
         if (framework.displayArr.count > 0) {
             for (DWSymbolModel *fileModel in framework.displayArr) {
-                [self.result appendFormat:@"  \t%@\t%@\r\n",fileModel.total.sizeStr, fileModel.showName];
+                [self.result appendFormat:@"  \t%@\t%@\t%@\t%@\r\n",fileModel.total.sizeStr,model.text.sizeStr,model.data.sizeStr, fileModel.showName];
             }
             [self.result appendFormat:@"\r\n"];
         }

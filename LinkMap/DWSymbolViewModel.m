@@ -120,7 +120,7 @@
             if(reachFiles == YES && reachSections == NO && reachSymbols == NO) {
                 NSRange range = [line rangeOfString:@"]"];
                 if(range.location != NSNotFound) {
-                    DWSymbolModel *symbol = [DWSymbolModel new];
+                    DWSymbolModel *symbol = [[DWSymbolModel alloc] init];
                     symbol.file = [line substringFromIndex:range.location+1];
                     // [ 0] 文件编号
                     NSString *key = [line substringToIndex:range.location+1];
@@ -157,6 +157,7 @@
             } else if (reachFiles == YES && reachSections == YES && reachSymbols == YES) {
                 NSArray <NSString *>*symbolsArray = [line componentsSeparatedByString:@"\t"];
                 if(symbolsArray.count == 3) {
+                    NSString *fileAddress = symbolsArray[0];
                     NSString *fileKeyAndName = symbolsArray[2];
                     NSUInteger size = strtoul([symbolsArray[1] UTF8String], nil, 16);
                     
@@ -167,6 +168,13 @@
                         
                         DWFrameWorkModel *setModel = frameworkSymbolMap[symbol.frameworkName];
                         if(symbol) {
+                            if ([self getSizeFromHex:fileAddress] < [self getSizeFromHex:firstDataAddress]) {
+                                symbol.text.size += size;
+                                setModel.text.size += size;
+                            } else {
+                                symbol.data.size += size;
+                                setModel.data.size += size;
+                            }
                             symbol.total.size += size;
                             setModel.total.size += size;
                         }

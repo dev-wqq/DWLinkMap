@@ -37,6 +37,8 @@ NSInteger const kShowTopNumber = 5;
         DWSymbolModel *hisModel = (DWSymbolModel *)self.historyViewModel.fileNameSymbolMap[fileName];
         
         curModel.total.historySize = hisModel.total.size;
+        curModel.text.historySize = hisModel.text.size;
+        curModel.data.historySize = hisModel.data.size;
         if (!hisModel) {
             curModel.showName = [NSString stringWithFormat:@"新增 %@ %@",curModel.fileName, @(curModel.total.size).stringValue];
         }
@@ -48,6 +50,8 @@ NSInteger const kShowTopNumber = 5;
             DWSymbolModel *model = [[DWSymbolModel alloc] init];
             model.file = hisModel.file;
             model.total.historySize = hisModel.total.size;
+            model.text.historySize  = hisModel.text.size;
+            model.data.historySize  = hisModel.data.size;
             model.showName = [NSString stringWithFormat:@"已删除 %@ %@",hisModel.frameworkName, @(hisModel.total.historySize).stringValue];
             self.fileNameSymbolMap[hisModel.fileName] = model;
         }
