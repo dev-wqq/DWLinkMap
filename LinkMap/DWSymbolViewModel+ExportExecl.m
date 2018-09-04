@@ -11,8 +11,8 @@
 
 static lxw_format *_knameFormat;// 各表格标题栏的格式
 
-static NSString * const kCurrentVersion = @"v7.0.14";
-static NSString * const kHistoryVersion = @"v7.0.12";
+static NSString * const kCurrentVersion = @"v7.1.2";
+static NSString * const kHistoryVersion = @"v7.1.1";
 
 @implementation DWSymbolViewModel (ExportExecl)
 
@@ -298,11 +298,11 @@ static NSString * const kHistoryVersion = @"v7.0.12";
 }
 
 - (const char *)c_whitelistSSSheet {
-    return [self c_charFromString:@"white_list_sorted_size"];
+    return [self c_charFromString:@"sh_group_sorted_size"];
 }
 
 - (const char *)c_whitelistSSDSheet {
-    return [self c_charFromString:@"white_list_sorted_diff_size"];
+    return [self c_charFromString:@"sh_group_sorted_diff_size"];
 }
 
 @end

@@ -43,6 +43,9 @@
         }
     }
     self.resultArray = mArr.copy;
+
+    [self.result appendFormat:@"\r\n__TextSize: %@",[DWCalculateHelper calculateSize:self.totalTextSize]];
+    [self.result appendFormat:@"\r\n__DataSize: %@",[DWCalculateHelper calculateSize:self.totalDataSize]];
     [self.result appendFormat:@"\r\n总大小: %@",[DWCalculateHelper calculateSize:totalSize]];
 }
 

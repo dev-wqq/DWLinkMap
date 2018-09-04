@@ -27,6 +27,9 @@ typedef NS_ENUM(NSInteger, DWSortedStyle) {
 @property (nonatomic, strong) NSURL *whitelistURL;
 @property (nonatomic, strong) NSSet *whitelistSet;
 
+@property (nonatomic, assign) NSUInteger totalTextSize;
+@property (nonatomic, assign) NSUInteger totalDataSize;
+
 @property (nonatomic, assign) BOOL frameworkAnalyze;
 @property (nonatomic, assign) BOOL showTop5;
 @property (nonatomic, assign) BOOL showMoreThanSize;

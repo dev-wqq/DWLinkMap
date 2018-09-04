@@ -97,15 +97,25 @@
     BOOL reachFiles = NO;
     BOOL reachSymbols = NO;
     BOOL reachSections = NO;
+    BOOL isFirstToData = YES;
+    
+    NSString *firstDataAddress = nil;
+    NSString *lastDataAddress = nil;
+    NSString *lastDataSize    = nil;
+    NSUInteger totalTextSize = 0;
+    NSUInteger totalDataSize = 0;
     
     for(NSString *line in lines) {
         if([line hasPrefix:@"#"]) {
-            if([line hasPrefix:@"# Object files:"])
+            if([line hasPrefix:@"# Object files:"]) {
                 reachFiles = YES;
-            else if ([line hasPrefix:@"# Sections:"])
+            } else if ([line hasPrefix:@"# Sections:"]) {
                 reachSections = YES;
-            else if ([line hasPrefix:@"# Symbols:"])
+            } else if ([line hasPrefix:@"# Symbols:"]) {
+                // 获取 __Data size
+                totalDataSize = [self getSizeFromMAddress:lastDataAddress] - [self getSizeFromMAddress:firstDataAddress] + [self getSizeFromHex:lastDataSize];
                 reachSymbols = YES;
+            }
         } else {
             if(reachFiles == YES && reachSections == NO && reachSymbols == NO) {
                 NSRange range = [line rangeOfString:@"]"];
@@ -125,6 +135,23 @@
                         frameworkModel.frameworkName = symbol.frameworkName;
                         frameworkModel.subMap = @{symbol.fileName:symbol}.mutableCopy;
                         frameworkSymbolMap[symbol.frameworkName] = frameworkModel;
+                    }
+                }
+            } else if (reachFiles == YES && reachSections == YES && reachSymbols == NO) {
+                // 可执行文件段表
+                NSArray <NSString *>*sectionsArray = [line componentsSeparatedByString:@"\t"];
+                if (sectionsArray.count == 4) {
+                    NSString *segment = sectionsArray[2];
+                    if ([segment isEqualToString:@"__DATA"]) {
+                        lastDataAddress = sectionsArray[0];
+                        lastDataSize = sectionsArray[1];
+                        // 获取第一个__DATA的地址，其偏移量就是 __Text 的大小
+                        if (isFirstToData) {
+                            // 获取__Text size
+                            totalTextSize = [self getSizeFromMAddress:lastDataAddress];
+                            isFirstToData = NO;
+                            firstDataAddress = lastDataAddress;
+                        }
                     }
                 }
             } else if (reachFiles == YES && reachSections == YES && reachSymbols == YES) {
@@ -148,9 +175,32 @@
             }
         }
     }
+    self.totalTextSize = totalTextSize;
+    self.totalDataSize = totalDataSize;
+    
     _fileNameSymbolMap = fileSymbolMap;
     _frameworkSymbolMap = frameworkSymbolMap;
 }
+
+// 通过文件内存地址获取大小
+- (NSUInteger)getSizeFromMAddress:(NSString *)mAddress {
+    if ([mAddress hasPrefix:@"0x1"]) {
+        mAddress = [mAddress stringByReplacingOccurrencesOfString:@"0x1" withString:@"0x0"];
+        NSUInteger size = [self getSizeFromHex:mAddress];
+        return size;
+    } else {
+        NSAssert(NO, @"file format error");
+        return 0;
+    }
+}
+
+- (NSUInteger)getSizeFromHex:(NSString *)hex {
+    if (![hex hasPrefix:@"0x"]) {
+        return 0;
+    }
+    return strtoul(hex.UTF8String, nil, 16);
+}
+
 
 #pragma make - Helper Methods
 
@@ -199,7 +249,7 @@
         if (self.whitelistSet.count > 0) {
             return [str containsString:self.searchkey] && [self.whitelistSet containsObject:frameworkName];
         } else {
-            return NO;
+            return [str containsString:self.searchkey];
         }
     } else {
         if (self.whitelistSet.count > 0) {

@@ -38,7 +38,7 @@ NSInteger const kShowTopNumber = 5;
         
         curModel.historySize = hisModel.size;
         if (!hisModel) {
-            curModel.showName = [NSString stringWithFormat:@"新增 %@",curModel.fileName];
+            curModel.showName = [NSString stringWithFormat:@"新增 %@ %@",curModel.fileName, @(curModel.size).stringValue];
         }
         [temp removeObjectForKey:fileName];
     }
@@ -48,7 +48,7 @@ NSInteger const kShowTopNumber = 5;
             DWSymbolModel *model = [[DWSymbolModel alloc] init];
             model.file = hisModel.file;
             model.historySize = hisModel.size;
-            model.showName = [NSString stringWithFormat:@"已删除 %@",hisModel.fileName];
+            model.showName = [NSString stringWithFormat:@"已删除 %@ %@",hisModel.frameworkName, @(hisModel.historySize).stringValue];
             self.fileNameSymbolMap[hisModel.fileName] = model;
         }
     }
@@ -89,8 +89,21 @@ NSInteger const kShowTopNumber = 5;
         }
     }
     self.resultArray = mArr.copy;
-    NSString *diffSizeStr = [DWCalculateHelper calculateDiffSize:totalSize-hisTotalSize];
-    [self.result appendFormat:@"\r\n当前版本总大小: %@\n历史版本总大小: %@  版本差异：%@\r\n",[DWCalculateHelper calculateSize:totalSize],[DWCalculateHelper calculateSize:hisTotalSize], diffSizeStr];
+    
+    NSInteger diff = self.totalTextSize-self.historyViewModel.totalTextSize;
+    NSString *diffSizeStr = [DWCalculateHelper calculateDiffSize:diff];
+    [self.result appendFormat:@"\r\n当前__TextSize: %@\t历史__TextSize: %@\t版本差异：%@\r\n",[DWCalculateHelper calculateSize:self.totalTextSize],[DWCalculateHelper calculateSize:self.historyViewModel.totalTextSize], diffSizeStr];
+    
+    [self.result appendFormat:@"\r\n当前__TextSize: %@\t历史__TextSize: %@\t版本差异：%@\r\n",@(self.totalTextSize),@(self.historyViewModel.totalTextSize), @(diff)];
+    
+    
+//    diff = self.totalDataSize-self.historyViewModel.totalDataSize;
+//    diffSizeStr = [DWCalculateHelper calculateDiffSize:diff];
+//    [self.result appendFormat:@"\r\n当前__DataSize: %@\t历史__DataSize: %@\t版本差异：%@\r\n\t版本差异：%@\r\n",[DWCalculateHelper calculateSize:self.totalDataSize],[DWCalculateHelper calculateSize:self.historyViewModel.totalDataSize], diffSizeStr,@(diff).stringValue];
+    
+    diff = totalSize-hisTotalSize;
+    diffSizeStr = [DWCalculateHelper calculateDiffSize:diff];
+    [self.result appendFormat:@"\r\n当前版本总大小: %@\n历史版本总大小: %@  版本差异：%@\r\n\t版本差异：%@\r\n",[DWCalculateHelper calculateSize:totalSize],[DWCalculateHelper calculateSize:hisTotalSize], diffSizeStr,@(diff).stringValue];
 }
 
 - (void)appendResultWithSumbolModel:(DWBaseModel *)model index:(NSInteger)index {
@@ -108,7 +121,7 @@ NSInteger const kShowTopNumber = 5;
         curSetModel.historySize = hisSetModel.size;
         curSetModel.historySubMap = hisSetModel.subMap;
         if (!hisSetModel) {
-            curSetModel.showName = [NSString stringWithFormat:@"新增 %@",curSetModel.frameworkName];
+            curSetModel.showName = [NSString stringWithFormat:@"新增 %@ %@",curSetModel.frameworkName, @(curSetModel.size).stringValue];
         }
         
         // 只显示top5
@@ -143,7 +156,7 @@ NSInteger const kShowTopNumber = 5;
             setModel.historySubMap = hisSetModel.historySubMap;
             setModel.historySize = hisSetModel.size;
             setModel.frameworkName = hisSetModel.frameworkName;
-            setModel.showName = [NSString stringWithFormat:@"已删除 %@",hisSetModel.frameworkName];
+            setModel.showName = [NSString stringWithFormat:@"已删除 %@ %@",hisSetModel.frameworkName, @(setModel.historySize).stringValue];
             self.frameworkSymbolMap[hisSetModel.frameworkName] = setModel;
         }
     }
