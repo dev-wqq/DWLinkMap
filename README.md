@@ -1,4 +1,4 @@
-# LinkMap解析工具：检查每个类占用大小
+# LinkMapCompare解析工具：对比App瘦身每个文件大小的变化 
 
 ## 概述
 
@@ -28,13 +28,3 @@ XCode -> Project -> Build Settings -> 把Write Link Map File选项设为yes，�
 
 2.工程编译完成后，在编译目录里找到Link Map文件（txt类型)
 默认的文件地址：~/Library/Developer/Xcode/DerivedData/XXX-xxxxxxxxxxxxx/Build/Intermediates/XXX.build/Debug-iphoneos/XXX.build/ \n\
-
-
-## 联系我
-
-如有问题或建议欢迎通过邮件联系我
-67111677@qq.com
-
-## 最后
-
-如果喜欢，请顺手我一个star吧~  ：）
