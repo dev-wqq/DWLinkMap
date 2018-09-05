@@ -11,8 +11,8 @@
 
 static lxw_format *_knameFormat;// 各表格标题栏的格式
 
-static NSString * const kCurrentVersion = @"v7.1.2";
-static NSString * const kHistoryVersion = @"v7.1.1";
+static NSString * const kCurrentVersion = @"v7.1.4";
+static NSString * const kHistoryVersion = @"v7.1.2";
 
 @implementation DWSymbolViewModel (ExportExecl)
 
@@ -23,7 +23,7 @@ static NSString * const kHistoryVersion = @"v7.1.1";
     lxw_workbook *workbook = workbook_new(fileName.UTF8String);
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     NSString *moduleName = self.frameworkAnalyze ? @"模块名称" : @"文件名称";
-    NSArray *titles = @[@"序号", kCurrentVersion, kHistoryVersion,@"版本差异", moduleName];
+    NSArray *titles = @[@"序号", kCurrentVersion,@"__TEXT",@"__DATA", kHistoryVersion,@"__TEXT",@"__DATA",@"版本差异",@"__TEXT",@"__DATA", moduleName];
     [self addCompareTitleForWorksheet:worksheet titles:titles];
     [self addEportDataAddSubFile:worksheet dataSource:self.resultArray];
     workbook_close(workbook);
@@ -36,7 +36,7 @@ static NSString * const kHistoryVersion = @"v7.1.1";
     lxw_workbook *workbook = workbook_new(fileName.UTF8String);
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     NSString *moduleName = self.frameworkAnalyze ? @"模块名称" : @"文件名称";
-    NSArray *titles = @[@"序号", kCurrentVersion, moduleName];
+    NSArray *titles = @[@"序号", kCurrentVersion,@"__TEXT",@"__DATA", moduleName];
     [self addCompareTitleForWorksheet:worksheet titles:titles];
     [self addCompareContentForWorksheet:worksheet dataSource:self.resultArray];
     workbook_close(workbook);
@@ -59,13 +59,13 @@ static NSString * const kHistoryVersion = @"v7.1.1";
     lxw_workbook *workbook = workbook_new(fileName.UTF8String);
     // 所有模块，通过模块大小降序排序
     NSArray *dataSource = self.frameworkSymbolMap.allValues;
-    NSArray *frameworks = [self sortedWithArr:dataSource];
+    NSArray *frameworks = [self sortedWithArr:dataSource style:DWSortedTextSize];
     [self makeReportSheetWithWorkbook:workbook
                             sheetName:self.c_allSSSheet
                            dataSource:frameworks];
     
     // 所有模块，通过版本对比大小降序排序
-    frameworks = [self sortedWithArr:self.frameworkSymbolMap.allValues style:DWSortedDiffSize];
+    frameworks = [self sortedWithArr:self.frameworkSymbolMap.allValues style:DWSortedTextDiffSize];
     [self makeReportSheetWithWorkbook:workbook
                             sheetName:self.c_allSDSSheet
                            dataSource:frameworks];
@@ -75,13 +75,13 @@ static NSString * const kHistoryVersion = @"v7.1.1";
     
     if (whitelist.count > 0) {
         // 所有名单内，通过版本对比大小降序排序
-        NSArray *sortedArr = [self sortedWithArr:whitelist];
+        NSArray *sortedArr = [self sortedWithArr:whitelist style:DWSortedTextSize];
         [self makeReportSheetWithWorkbook:workbook
                                 sheetName:self.c_whitelistSSSheet
                                dataSource:sortedArr];
         
         // 所有名单内，通过版本对比大小降序排序
-        NSArray *sortedDifffArr = [self sortedWithArr:whitelist style:DWSortedDiffSize];
+        NSArray *sortedDifffArr = [self sortedWithArr:whitelist style:DWSortedTextDiffSize];
         [self makeReportSheetWithWorkbook:workbook
                                 sheetName:self.c_whitelistSSDSheet
                                dataSource:sortedDifffArr];
@@ -156,7 +156,7 @@ static NSString * const kHistoryVersion = @"v7.1.1";
 
 /// 添加内容数据
 - (void)addEportCustomDataAddSubFile:(lxw_worksheet *)worksheet
-                    dataSource:(NSArray *)dataSource {
+                          dataSource:(NSArray *)dataSource {
     NSUInteger totalSize = 0;
     NSUInteger hisTotalSize = 0;
     int totalNumber = 0;
@@ -219,6 +219,15 @@ static NSString * const kHistoryVersion = @"v7.1.1";
                             model:(DWBaseModel *)model
                         indexName:(NSString *)indexName
                             index:(int)index {
+    return [self addCompareRowForWorkSheet:worksheet model:model indexName:indexName index:index isCompare:NO];
+}
+
+/// 添加每一条数据
+- (void)addCompareRowForWorkSheet:(lxw_worksheet *)worksheet
+                            model:(DWBaseModel *)model
+                        indexName:(NSString *)indexName
+                            index:(int)index
+                        isCompare:(BOOL)isCompare {
     int row = 0;
     char const *c_number = [indexName cStringUsingEncoding:NSUTF8StringEncoding];
     worksheet_write_string(worksheet, index, row, c_number, _knameFormat);
@@ -228,13 +237,37 @@ static NSString * const kHistoryVersion = @"v7.1.1";
     worksheet_write_string(worksheet, index, row, c_current, _knameFormat);
     row++;
     
+    char const *c_currentText = [model.text.sizeStr cStringUsingEncoding:NSUTF8StringEncoding];
+    worksheet_write_string(worksheet, index, row, c_currentText, _knameFormat);
+    row++;
+    
+    char const *c_currentData = [model.data.sizeStr cStringUsingEncoding:NSUTF8StringEncoding];
+    worksheet_write_string(worksheet, index, row, c_currentData, _knameFormat);
+    row++;
+    
     if (self.historyViewModel) {
         char const *c_history = [model.total.historySizeStr cStringUsingEncoding:NSUTF8StringEncoding];
         worksheet_write_string(worksheet, index, row, c_history, _knameFormat);
         row++;
         
+        char const *c_historyText = [model.text.historySizeStr cStringUsingEncoding:NSUTF8StringEncoding];
+        worksheet_write_string(worksheet, index, row, c_historyText, _knameFormat);
+        row++;
+        
+        char const *c_historyData = [model.data.historySizeStr cStringUsingEncoding:NSUTF8StringEncoding];
+        worksheet_write_string(worksheet, index, row, c_historyData, _knameFormat);
+        row++;
+        
         char const *c_diff = [model.total.differentSizeStr cStringUsingEncoding:NSUTF8StringEncoding];
         worksheet_write_string(worksheet, index, row, c_diff, _knameFormat);
+        row++;
+        
+        char const *c_diffText = [model.text.differentSizeStr cStringUsingEncoding:NSUTF8StringEncoding];
+        worksheet_write_string(worksheet, index, row, c_diffText, _knameFormat);
+        row++;
+        
+        char const *c_diffData = [model.data.differentSizeStr cStringUsingEncoding:NSUTF8StringEncoding];
+        worksheet_write_string(worksheet, index, row, c_diffData, _knameFormat);
         row++;
     }
     

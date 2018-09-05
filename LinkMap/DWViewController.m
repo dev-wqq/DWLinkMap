@@ -86,7 +86,6 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
         * 搜索目前不支持分模块解析，使用containsString 实现";
     self.historyViewModel = [[DWSymbolViewModel alloc] init];
     self.viewModel = [[DWSymbolViewModel alloc] init];
-    self.viewModel.historyViewModel = self.historyViewModel;
 }
 
 - (IBAction)cancaelCurrentLinkMap:(id)sender {
@@ -169,6 +168,7 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     
     // 方法调用
     if (type == DWAnalyzeTypeCompare || type == DWAnalyzeTypeCompareWithWhiteList) {
+        self.viewModel.historyViewModel = self.historyViewModel;
         [self analyzeCompareVersion:type == DWAnalyzeTypeCompareWithWhiteList];
     } else if (type == DWAnalyzeTypeSingle || type == DWAnalyzeTypeSingleWithWhiteList) {
         if (self.historyViewModel.linkMapFileURL) {

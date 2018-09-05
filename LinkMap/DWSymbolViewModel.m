@@ -30,6 +30,10 @@
                 return [self compare:obj1.total.historySize otherSize:obj2.total.historySize];
             case DWSortedDiffSize:
                 return [self compare:obj1.total.differentSize otherSize:obj2.total.differentSize];
+            case DWSortedTextSize:
+                return [self compare:obj1.text.size otherSize:obj2.text.size];
+            case DWSortedTextDiffSize:
+                return [self compare:obj1.text.differentSize otherSize:obj2.text.differentSize];
         }
         return [self compare:obj1.total.size otherSize:obj2.total.size];
     }];

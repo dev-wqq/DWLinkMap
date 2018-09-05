@@ -17,9 +17,9 @@ CGFloat const kCalculateConstant = 1000.0;
     NSInteger temp = size / kCalculateConstant / kCalculateConstant;
     NSString *add = size > 0.0 ? @"+" : @"";
     if (temp >= 1.0 || temp <= -1.0) {
-        sizeStr = [NSString stringWithFormat:@"%@%.2fM", add, size / kCalculateConstant / kCalculateConstant];
+        sizeStr = [NSString stringWithFormat:@"%@%.3fM", add, size / kCalculateConstant / kCalculateConstant];
     } else {
-        sizeStr = [NSString stringWithFormat:@"%@%.2fK", add, size / kCalculateConstant];
+        sizeStr = [NSString stringWithFormat:@"%@%.3fK", add, size / kCalculateConstant];
     }
     return sizeStr;
 }
@@ -28,9 +28,9 @@ CGFloat const kCalculateConstant = 1000.0;
     NSString *sizeStr = nil;
     NSInteger temp = size / kCalculateConstant / kCalculateConstant;
     if (temp >= 1.0) {
-        sizeStr = [NSString stringWithFormat:@"%.2fM", size / kCalculateConstant / kCalculateConstant];
+        sizeStr = [NSString stringWithFormat:@"%.3fM", size / kCalculateConstant / kCalculateConstant];
     } else {
-        sizeStr = [NSString stringWithFormat:@"%.2fK", size / kCalculateConstant];
+        sizeStr = [NSString stringWithFormat:@"%.3fK", size / kCalculateConstant];
     }
     return sizeStr;
 }

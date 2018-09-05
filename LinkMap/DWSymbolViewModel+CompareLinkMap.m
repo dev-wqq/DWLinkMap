@@ -59,7 +59,7 @@ NSInteger const kShowTopNumber = 5;
 }
 
 - (void)buildCompareResult:(NSArray *)fileNames isFormeworkSet:(BOOL)isFormeworkSet {
-    self.result = [@"序号\t当前版本\t历史版本\t版本差异\t文件大小\r\n\r\n" mutableCopy];
+    self.result = [@"序号\t当前版本\t__Text\t历史版本\t__Text\t版本差异\t__Text 文件名\r\n\r\n" mutableCopy];
     NSUInteger totalSize = 0;
     NSUInteger hisTotalSize = 0;
     NSMutableArray *mArr = [NSMutableArray array];
@@ -111,7 +111,12 @@ NSInteger const kShowTopNumber = 5;
 }
 
 - (void)appendResultWithSumbolModel:(DWBaseModel *)model index:(NSInteger)index {
-    [self.result appendFormat:@"%ld\t%@\t%@\t%@\t%@\r\n",index,model.total.sizeStr, model.total.historySizeStr, model.total.differentSizeStr, model.showName];
+    [self.result appendFormat:@"%ld\t%@\t%@\t%@\t%@\t%@\t%@ %@\r\n",
+     index,
+     model.total.sizeStr,model.text.sizeStr,
+     model.total.historySizeStr,model.text.historySizeStr,
+     model.total.differentSizeStr,model.text.differentSizeStr,
+     model.showName];
 }
 
 #pragma make - 按照framework 分组
@@ -123,6 +128,8 @@ NSInteger const kShowTopNumber = 5;
         DWFrameWorkModel *hisSetModel = (DWFrameWorkModel *)self.historyViewModel.frameworkSymbolMap[key];
         
         curSetModel.total.historySize = hisSetModel.total.size;
+        curSetModel.text.historySize = hisSetModel.text.size;
+        curSetModel.data.historySize = hisSetModel.data.size;
         curSetModel.historySubMap = hisSetModel.subMap;
         if (!hisSetModel) {
             curSetModel.showName = [NSString stringWithFormat:@"新增 %@ %@",curSetModel.frameworkName, @(curSetModel.total.size).stringValue];
@@ -159,6 +166,8 @@ NSInteger const kShowTopNumber = 5;
             setModel.subMap = hisSetModel.subMap;
             setModel.historySubMap = hisSetModel.historySubMap;
             setModel.total.historySize = hisSetModel.total.size;
+            setModel.text.historySize = hisSetModel.text.size;
+            setModel.data.historySize = hisSetModel.data.size;
             setModel.frameworkName = hisSetModel.frameworkName;
             setModel.showName = [NSString stringWithFormat:@"已删除 %@ %@",hisSetModel.frameworkName, @(setModel.total.historySize).stringValue];
             self.frameworkSymbolMap[hisSetModel.frameworkName] = setModel;
@@ -167,13 +176,23 @@ NSInteger const kShowTopNumber = 5;
 }
 
 - (void)appendResultWithFrameworkModel:(DWBaseModel *)model index:(NSInteger)index {
-    [self.result appendFormat:@"%ld\t%@\t%@\t%@\t%@\r\n",index,model.total.sizeStr, model.total.historySizeStr, model.total.differentSizeStr, model.showName];
-    DWFrameWorkModel *frameworkModel = (DWFrameWorkModel *)model;
+    [self.result appendFormat:@"%ld\t%@\t%@\t%@\t%@\t%@\t%@ %@\r\n",
+     index,
+     model.total.sizeStr,model.text.sizeStr,
+     model.total.historySizeStr,model.text.historySizeStr,
+     model.total.differentSizeStr,model.text.differentSizeStr,
+     model.showName];
+     DWFrameWorkModel *frameworkModel = (DWFrameWorkModel *)model;
     if (frameworkModel.displayArr.count > 0) {
         for (int i = 0; i < frameworkModel.displayArr.count; i++) {
             DWSymbolModel *fileModel = frameworkModel.displayArr[i];
             NSString *subIndex = [NSString stringWithFormat:@"%ld_%d",(long)index,i];
-            [self.result appendFormat:@"%@\t%@\t%@\t%@\t%@\r\n",subIndex,fileModel.total.sizeStr, fileModel.total.historySizeStr, fileModel.total.differentSizeStr, fileModel.showName];
+            [self.result appendFormat:@"%@\t%@\t%@\t%@\t%@\t%@\t%@ %@\r\n",
+             subIndex,
+             fileModel.total.sizeStr, fileModel.text.sizeStr,
+             fileModel.total.historySizeStr,fileModel.text.historySizeStr,
+             fileModel.total.differentSizeStr,fileModel.text.differentSizeStr,
+             fileModel.showName];
         }
     }
 }

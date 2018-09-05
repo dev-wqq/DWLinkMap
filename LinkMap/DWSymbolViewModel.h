@@ -14,6 +14,8 @@ typedef NS_ENUM(NSInteger, DWSortedStyle) {
     DWSortedSize = 0,
     DWSortedHistorySize,
     DWSortedDiffSize,
+    DWSortedTextSize,
+    DWSortedTextDiffSize,
 };
 
 @interface DWSymbolViewModel : NSObject
