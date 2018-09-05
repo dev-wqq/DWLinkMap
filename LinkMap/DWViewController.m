@@ -69,9 +69,9 @@ typedef NS_ENUM(NSInteger, DWAnalyzeType) {
     2.工程编译完成后，在编译目录里找到Link Map文件（txt类型） \n\
     默认的文件地址：~/Library/Developer/Xcode/DerivedData/XXX-xxxxxxxxxxxxx/Build/Intermediates/XXX.build/Debug-iphoneos/XXX.build/ \n\
     3.支持两个版本 LinkMap 文件对比差异： \n\
-      * 点击“选择历史版本linkMap”，打开老之前版本 Link Map文件  \n\
-      * 点击“选择历史版本linkMap”，打开老之前版本 Link Map文件 \n\
-      * 点击“只分析模块白名单路径”，只有在分模块解析勾选才生效，只对比名单内的模块   \n\
+      * 点击“选择历史版本linkMap”，打开历史版本 Link Map文件  \n\
+      * 点击“选择当前版本linkMap”，打开当前版本 Link Map文件 \n\
+      * 点击“只分析模块白名单路径”，只有在分模块解析勾选才生效，只对比白名单内的模块   \n\
     4. 单选项： \n\
         * 勾选“分模块分析”，实现对不同库的目标文件惊醒分组；\n\
             * 勾选“显示每个模块top5文件”, 实现每个分组显示最大的五个子文件；\n\

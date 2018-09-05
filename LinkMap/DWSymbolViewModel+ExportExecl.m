@@ -59,15 +59,20 @@ static NSString * const kHistoryVersion = @"v7.1.2";
     lxw_workbook *workbook = workbook_new(fileName.UTF8String);
     // 所有模块，通过模块大小降序排序
     NSArray *dataSource = self.frameworkSymbolMap.allValues;
-    NSArray *frameworks = [self sortedWithArr:dataSource style:DWSortedTextSize];
+    NSArray *frameworks = [self sortedWithArr:dataSource];
     [self makeReportSheetWithWorkbook:workbook
-                            sheetName:self.c_allSSSheet
+                            sheetName:[self c_charFromString:@"by_total_size"]
+                           dataSource:frameworks];
+    
+    frameworks = [self sortedWithArr:dataSource style:DWSortedTextSize];
+    [self makeReportSheetWithWorkbook:workbook
+                            sheetName:[self c_charFromString:@"by_text_size"]
                            dataSource:frameworks];
     
     // 所有模块，通过版本对比大小降序排序
     frameworks = [self sortedWithArr:self.frameworkSymbolMap.allValues style:DWSortedTextDiffSize];
     [self makeReportSheetWithWorkbook:workbook
-                            sheetName:self.c_allSDSSheet
+                            sheetName:[self c_charFromString:@"by_text_diff_size"]
                            dataSource:frameworks];
     
     
@@ -75,19 +80,10 @@ static NSString * const kHistoryVersion = @"v7.1.2";
     
     if (whitelist.count > 0) {
         // 所有名单内，通过版本对比大小降序排序
-        NSArray *sortedArr = [self sortedWithArr:whitelist style:DWSortedTextSize];
-        [self makeReportSheetWithWorkbook:workbook
-                                sheetName:self.c_whitelistSSSheet
-                               dataSource:sortedArr];
-        
-        // 所有名单内，通过版本对比大小降序排序
         NSArray *sortedDifffArr = [self sortedWithArr:whitelist style:DWSortedTextDiffSize];
         [self makeReportSheetWithWorkbook:workbook
-                                sheetName:self.c_whitelistSSDSheet
+                                sheetName:[self c_charFromString:@"sh_by_text_diff_size"]
                                dataSource:sortedDifffArr];
-        
-        char const *sheetName = [self c_charFromString:@"sh_group_add"];
-        [self makeGroupAddSheetWithWorkbook:workbook sheetName:sheetName dataSource:sortedArr];
     }
     workbook_close(workbook);
 }
@@ -125,6 +121,12 @@ static NSString * const kHistoryVersion = @"v7.1.2";
                     dataSource:(NSArray *)dataSource {
     NSUInteger totalSize = 0;
     NSUInteger hisTotalSize = 0;
+    
+    NSUInteger totalTextSize = 0;
+    NSUInteger totalHisTextSize = 0;
+    
+    NSUInteger totalDataSize = 0;
+    NSUInteger totalHisDataSize = 0;
     int totalNumber = 0;
     for (int index = 0; index < dataSource.count; index++) {
         DWBaseModel *model = dataSource[index];
@@ -146,11 +148,21 @@ static NSString * const kHistoryVersion = @"v7.1.2";
         }
         totalSize += model.total.size;
         hisTotalSize += model.total.historySize;
+        
+        totalTextSize += model.text.size;
+        totalHisTextSize += model.text.historySize;
+        
+        totalDataSize += model.data.size;
+        totalHisDataSize += model.data.historySize;
     }
     NSInteger lastIndex = totalNumber+1;
     [self addCompareTotalForWorkSheet:worksheet
                             totalSize:totalSize
                          hisTotalSize:hisTotalSize
+                        totalTextSize:totalTextSize
+                     totalHisTextSize:totalHisTextSize
+                        totalDataSize:totalDataSize
+                     totalHisDataSize:totalHisDataSize
                             lastIndex:(int)lastIndex];
 }
 
@@ -159,6 +171,12 @@ static NSString * const kHistoryVersion = @"v7.1.2";
                           dataSource:(NSArray *)dataSource {
     NSUInteger totalSize = 0;
     NSUInteger hisTotalSize = 0;
+    
+    NSUInteger totalTextSize = 0;
+    NSUInteger totalHisTextSize = 0;
+    
+    NSUInteger totalDataSize = 0;
+    NSUInteger totalHisDataSize = 0;
     int totalNumber = 0;
     for (int index = 0; index < dataSource.count; index++) {
         DWBaseModel *model = dataSource[index];
@@ -180,11 +198,21 @@ static NSString * const kHistoryVersion = @"v7.1.2";
         }
         totalSize += model.total.size;
         hisTotalSize += model.total.historySize;
+        
+        totalTextSize += model.text.size;
+        totalHisTextSize += model.text.historySize;
+        
+        totalDataSize += model.data.size;
+        totalHisDataSize += model.data.historySize;
     }
     NSInteger lastIndex = totalNumber+1;
     [self addCompareTotalForWorkSheet:worksheet
                             totalSize:totalSize
                          hisTotalSize:hisTotalSize
+                        totalTextSize:totalTextSize
+                     totalHisTextSize:totalHisTextSize
+                        totalDataSize:totalDataSize
+                     totalHisDataSize:totalHisDataSize
                             lastIndex:(int)lastIndex];
 }
 
@@ -194,17 +222,33 @@ static NSString * const kHistoryVersion = @"v7.1.2";
     NSUInteger totalSize = 0;
     NSUInteger hisTotalSize = 0;
     
+    NSUInteger totalTextSize = 0;
+    NSUInteger totalHisTextSize = 0;
+    
+    NSUInteger totalDataSize = 0;
+    NSUInteger totalHisDataSize = 0;
+    
     for (int index = 0; index < dataSource.count; index++) {
         DWBaseModel *model = dataSource[index];
         
         [self addCompareRowForWorkSheet:worksheet model:model index:index+1];
         totalSize += model.total.size;
         hisTotalSize += model.total.historySize;
+        
+        totalTextSize += model.text.size;
+        totalHisTextSize += model.text.historySize;
+        
+        totalDataSize += model.data.size;
+        totalHisDataSize += model.data.historySize;
     }
     NSInteger lastIndex = dataSource.count + 1;
     [self addCompareTotalForWorkSheet:worksheet
                             totalSize:totalSize
                          hisTotalSize:hisTotalSize
+                        totalTextSize:totalTextSize
+                     totalHisTextSize:totalHisTextSize
+                        totalDataSize:totalDataSize
+                     totalHisDataSize:totalHisDataSize
                             lastIndex:(int)lastIndex];
 }
 
@@ -279,6 +323,10 @@ static NSString * const kHistoryVersion = @"v7.1.2";
 - (void)addCompareTotalForWorkSheet:(lxw_worksheet *)worksheet
                           totalSize:(NSUInteger)totalSize
                        hisTotalSize:(NSUInteger)hisTotalSize
+                      totalTextSize:(NSUInteger)totalTextSize
+                   totalHisTextSize:(NSUInteger)totalHisTextSize
+                      totalDataSize:(NSUInteger)totalDataSize
+                   totalHisDataSize:(NSUInteger)totalHisDataSize
                           lastIndex:(int)lastIndex {
     worksheet_write_string(worksheet, (int)lastIndex, 0, "", _knameFormat);
     lastIndex++;
@@ -290,15 +338,39 @@ static NSString * const kHistoryVersion = @"v7.1.2";
     char const *c_str = [[NSString stringWithFormat:@"%@",str] cStringUsingEncoding:NSUTF8StringEncoding];
     worksheet_write_string(worksheet, (int)lastIndex, 1, c_str, _knameFormat);
     
+    NSString *str_text = @(self.totalTextSize).stringValue;
+    char const *c_str_text = [str_text cStringUsingEncoding:NSUTF8StringEncoding];
+    worksheet_write_string(worksheet, (int)lastIndex, 2, c_str_text, _knameFormat);
+    
+    NSString *str_data = @(self.totalDataSize).stringValue;
+    char const *c_str_data = [str_data cStringUsingEncoding:NSUTF8StringEncoding];
+    worksheet_write_string(worksheet, (int)lastIndex, 3, c_str_data, _knameFormat);
+    
     if (self.historyViewModel) {
         NSString *hisStr = [DWCalculateHelper calculateSize:hisTotalSize];
         char const *c_hisStr = [[NSString stringWithFormat:@"%@",hisStr] cStringUsingEncoding:NSUTF8StringEncoding];
+        worksheet_write_string(worksheet, (int)lastIndex, 4, c_hisStr, _knameFormat);
+        
+        hisStr = @(self.historyViewModel.totalTextSize).stringValue;
+        c_hisStr = [hisStr cStringUsingEncoding:NSUTF8StringEncoding];
+        worksheet_write_string(worksheet, (int)lastIndex, 5, c_hisStr, _knameFormat);
+        
+        hisStr = @(self.historyViewModel.totalDataSize).stringValue;
+        c_hisStr = [hisStr cStringUsingEncoding:NSUTF8StringEncoding];
+        worksheet_write_string(worksheet, (int)lastIndex, 6, c_hisStr, _knameFormat);
+        
         
         NSString *diffStr = [DWCalculateHelper calculateDiffSize:totalSize-hisTotalSize];
-        char const *c_diffStr = [[NSString stringWithFormat:@"%@",diffStr] cStringUsingEncoding:NSUTF8StringEncoding];
+        char const *c_diffStr = [diffStr cStringUsingEncoding:NSUTF8StringEncoding];
+        worksheet_write_string(worksheet, (int)lastIndex, 7, c_diffStr, _knameFormat);
         
-        worksheet_write_string(worksheet, (int)lastIndex, 2, c_hisStr, _knameFormat);
-        worksheet_write_string(worksheet, (int)lastIndex, 3, c_diffStr, _knameFormat);
+        diffStr = [DWCalculateHelper calculateDiffSize:totalTextSize-totalHisTextSize];
+        c_diffStr = [diffStr cStringUsingEncoding:NSUTF8StringEncoding];
+        worksheet_write_string(worksheet, (int)lastIndex, 8, c_diffStr, _knameFormat);
+        
+        diffStr = [DWCalculateHelper calculateDiffSize:totalDataSize-totalHisDataSize];
+        c_diffStr = [diffStr cStringUsingEncoding:NSUTF8StringEncoding];
+        worksheet_write_string(worksheet, (int)lastIndex, 9, c_diffStr, _knameFormat);
     }
 }
 
@@ -306,11 +378,11 @@ static NSString * const kHistoryVersion = @"v7.1.2";
 
 
 - (NSArray *)dw_compareTitles {
-    return @[@"序号", kCurrentVersion, kHistoryVersion,@"版本差异",@"模块名称"];
+    return @[@"序号", kCurrentVersion,@"__TEXT",@"__DATA", kHistoryVersion,@"__TEXT",@"__DATA",@"版本差异",@"__TEXT",@"__DATA", @"模块名称"];
 }
 
 - (NSArray *)dw_singleTitles {
-    return @[@"序号",kCurrentVersion, @"模块名称"];
+    return @[@"序号", kCurrentVersion,@"__TEXT",@"__DATA", @"模块名称"];
 }
 
 - (const char *)c_charFromString:(NSString *)str {
